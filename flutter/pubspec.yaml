@@ -1,0 +1,111 @@
+name: authvault
+description: Secure two-factor authenticator app with TOTP/HOTP support
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.4.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # State & Navigation
+  flutter_riverpod: ^2.6.1
+  riverpod_annotation: ^2.6.1
+  hooks_riverpod: ^2.6.1
+  flutter_hooks: ^0.20.5
+  go_router: ^13.2.0
+
+  # Database
+  drift: ^2.18.0
+  sqlite3_flutter_libs: ^0.5.24
+  path_provider: ^2.1.3
+  path: ^1.9.0
+
+  # Security
+  flutter_secure_storage: ^9.2.2
+  local_auth: ^2.3.0
+  cryptography: ^2.7.0
+  pointycastle: ^3.9.1
+  convert: ^3.1.1
+
+  # QR
+  mobile_scanner: ^5.2.3
+  qr_flutter: ^4.1.0
+  image_picker: ^1.1.2
+
+  # UI
+  flex_color_scheme: ^7.3.1
+  font_awesome_flutter: ^10.7.0
+  flutter_svg: ^2.0.10+1
+  cached_network_image: ^3.3.1
+  shimmer: ^3.0.0
+  animate_do: ^3.3.4
+  lottie: ^3.1.2
+
+  # Utilities
+  intl: ^0.20.2
+  uuid: ^4.4.0
+  collection: ^1.18.0
+  equatable: ^2.0.5
+  json_annotation: ^4.9.0
+  freezed_annotation: ^2.4.1
+  share_plus: ^9.0.0
+  file_picker: ^8.0.7
+  url_launcher: ^6.3.0
+  package_info_plus: ^8.0.2
+  device_info_plus: ^10.1.0
+  connectivity_plus: ^6.0.3
+
+  # Cloud
+  googleapis: ^13.2.0
+  googleapis_auth: ^1.6.0
+  http: ^1.2.1
+
+  # Notifications
+  flutter_local_notifications: ^17.2.2
+
+  # Home Widget (Android)
+  home_widget: ^0.4.1
+
+  # Logging
+  logger: ^2.3.0
+  talker_flutter: ^4.2.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+  build_runner: ^2.4.9
+  drift_dev: ^2.18.0
+  riverpod_generator: ^2.4.0
+  freezed: ^2.5.2
+  json_serializable: ^6.8.0
+  mockito: ^5.4.4
+  flutter_gen_runner: ^5.7.0
+
+flutter:
+  uses-material-design: true
+  
+  assets:
+    - assets/icons/
+    - assets/fonts/
+    - assets/animations/
+    - assets/i18n/
+
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Inter-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Inter-Bold.ttf
+          weight: 700
+    - family: JetBrainsMono
+      fonts:
+        - asset: assets/fonts/JetBrainsMono-Bold.ttf
+          weight: 700
