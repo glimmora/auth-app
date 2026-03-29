@@ -17,7 +17,7 @@ class AddAccountScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const SizedBox(height: 24),
-            
+
             // Scan QR option
             Card(
               child: ListTile(
@@ -28,9 +28,9 @@ class AddAccountScreen extends StatelessWidget {
                 onTap: () => context.push('/account/add/scan'),
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Image import option
             Card(
               child: ListTile(
@@ -43,9 +43,9 @@ class AddAccountScreen extends StatelessWidget {
                 },
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Manual entry option
             Card(
               child: ListTile(
@@ -56,9 +56,9 @@ class AddAccountScreen extends StatelessWidget {
                 onTap: () => context.push('/account/add/manual'),
               ),
             ),
-            
+
             const Spacer(),
-            
+
             // Help text
             Text(
               'You can add accounts from any service that supports TOTP or HOTP, including Google, GitHub, Microsoft, and more.',

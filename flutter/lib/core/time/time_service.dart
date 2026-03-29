@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 /// Time Service
-/// 
+///
 /// Provides accurate time for TOTP/HOTP generation
 /// with optional NTP synchronization
 class TimeService {
@@ -10,7 +10,8 @@ class TimeService {
   factory TimeService() => _instance;
   TimeService._internal();
 
-  final ValueNotifier<DateTime> _currentTime = ValueNotifier<DateTime>(DateTime.now());
+  final ValueNotifier<DateTime> _currentTime =
+      ValueNotifier<DateTime>(DateTime.now());
   Timer? _timer;
 
   /// Current time

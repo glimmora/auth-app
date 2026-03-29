@@ -1,7 +1,8 @@
+import 'dart:math';
 import 'dart:typed_data';
 
 /// Base32 encoding/decoding utilities
-/// 
+///
 /// Uses RFC 4648 Base32 alphabet (A-Z, 2-7)
 class Base32 {
   static const _alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
@@ -42,7 +43,7 @@ class Base32 {
   static Uint8List decode(String input) {
     // Remove padding and whitespace, convert to uppercase
     input = input.toUpperCase().replaceAll('=', '').replaceAll(' ', '');
-    
+
     final buffer = <int>[];
     var bufferValue = 0;
     var bitsLeft = 0;
@@ -69,23 +70,20 @@ class Base32 {
   static bool isValid(String input) {
     final cleaned = input.toUpperCase().replaceAll('=', '').replaceAll(' ', '');
     if (cleaned.isEmpty) return false;
-    
+
     for (final char in cleaned.split('')) {
-      if (_alphabet.indexOf(char) == -1) {
+      if (!_alphabet.contains(char)) {
         return false;
       }
     }
-    
+
     return true;
   }
 
   /// Generates a random Base32 secret
   static Future<String> generateSecret({int bytes = 20}) async {
-    final random = await Random.secure();
+    final random = Random.secure();
     final bytesList = List.generate(bytes, (_) => random.nextInt(256));
     return encode(Uint8List.fromList(bytesList));
   }
 }
-
-// Import for Random
-import 'dart:math';

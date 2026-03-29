@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:go_router/go_router.dart';
 
 /// Manual entry screen for adding accounts
 class ManualEntryScreen extends StatefulWidget {
@@ -15,7 +14,7 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
   final _issuerController = TextEditingController();
   final _labelController = TextEditingController();
   final _secretController = TextEditingController();
-  
+
   String _accountType = 'totp';
   String _algorithm = 'SHA1';
   int _digits = 6;
@@ -52,7 +51,10 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
     for (var i = 0; i < length; i++) {
       random.add((length + i) % alphabet.length);
     }
-    return List.generate(length, (_) => alphabet[random[_secretController.text.length] % alphabet.length]).join();
+    return List.generate(
+        length,
+        (_) => alphabet[
+            random[_secretController.text.length] % alphabet.length]).join();
   }
 
   @override
@@ -68,14 +70,16 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
           children: [
             // Account Type
             DropdownButtonFormField<String>(
-              value: _accountType,
+              initialValue: _accountType,
               decoration: const InputDecoration(
                 labelText: 'Account Type',
                 border: OutlineInputBorder(),
               ),
               items: const [
-                DropdownMenuItem(value: 'totp', child: Text('Time-based (TOTP)')),
-                DropdownMenuItem(value: 'hotp', child: Text('Counter-based (HOTP)')),
+                DropdownMenuItem(
+                    value: 'totp', child: Text('Time-based (TOTP)')),
+                DropdownMenuItem(
+                    value: 'hotp', child: Text('Counter-based (HOTP)')),
                 DropdownMenuItem(value: 'steam', child: Text('Steam Guard')),
               ],
               onChanged: (value) {
@@ -84,9 +88,9 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                 });
               },
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Issuer
             TextFormField(
               controller: _issuerController,
@@ -103,9 +107,9 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                 return null;
               },
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Label
             TextFormField(
               controller: _labelController,
@@ -121,9 +125,9 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                 return null;
               },
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Secret
             TextFormField(
               controller: _secretController,
@@ -164,13 +168,13 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                 return null;
               },
             ),
-            
+
             if (_accountType != 'steam') ...[
               const SizedBox(height: 16),
-              
+
               // Algorithm
               DropdownButtonFormField<String>(
-                value: _algorithm,
+                initialValue: _algorithm,
                 decoration: const InputDecoration(
                   labelText: 'Algorithm',
                   border: OutlineInputBorder(),
@@ -186,12 +190,12 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                   });
                 },
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // Digits
               DropdownButtonFormField<int>(
-                value: _digits,
+                initialValue: _digits,
                 decoration: const InputDecoration(
                   labelText: 'Digits',
                   border: OutlineInputBorder(),
@@ -207,13 +211,13 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                   });
                 },
               ),
-              
+
               if (_accountType == 'totp') ...[
                 const SizedBox(height: 16),
-                
+
                 // Period
                 DropdownButtonFormField<int>(
-                  value: _period,
+                  initialValue: _period,
                   decoration: const InputDecoration(
                     labelText: 'Period (seconds)',
                     border: OutlineInputBorder(),
@@ -233,9 +237,9 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                 ),
               ],
             ],
-            
+
             const SizedBox(height: 32),
-            
+
             // Submit button
             ElevatedButton(
               onPressed: _handleSubmit,

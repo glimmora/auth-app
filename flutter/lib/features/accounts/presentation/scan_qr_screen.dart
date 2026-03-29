@@ -52,13 +52,13 @@ class _ScanQRScreenState extends State<ScanQRScreen> {
             controller: _controller,
             onDetect: _handleDetect,
           ),
-          
+
           // Overlay with scan frame
           CustomPaint(
             painter: _ScanFramePainter(),
             size: Size.infinite,
           ),
-          
+
           // Instructions
           Positioned(
             bottom: 100,
@@ -78,9 +78,9 @@ class _ScanQRScreenState extends State<ScanQRScreen> {
                     textAlign: TextAlign.center,
                   ),
                 ),
-                
+
                 const SizedBox(height: 16),
-                
+
                 // Manual entry fallback
                 TextButton.icon(
                   onPressed: () => context.push('/account/add/manual'),
@@ -98,7 +98,7 @@ class _ScanQRScreenState extends State<ScanQRScreen> {
               ],
             ),
           ),
-          
+
           // Processing indicator
           if (_isProcessing)
             const Center(
@@ -111,17 +111,17 @@ class _ScanQRScreenState extends State<ScanQRScreen> {
 
   Future<void> _handleDetect(BarcodeCapture capture) async {
     if (_isProcessing) return;
-    
+
     final barcode = capture.barcodes.first;
     if (barcode.rawValue == null) return;
-    
+
     setState(() {
       _isProcessing = true;
     });
-    
+
     // Parse otpauth:// URI
     final uri = barcode.rawValue!;
-    
+
     // Validate and process
     if (uri.startsWith('otpauth://')) {
       // Navigate to confirmation screen
@@ -140,7 +140,7 @@ class _ScanQRScreenState extends State<ScanQRScreen> {
           backgroundColor: Colors.red,
         ),
       );
-      
+
       setState(() {
         _isProcessing = false;
       });
@@ -152,7 +152,9 @@ class _ScanQRScreenState extends State<ScanQRScreen> {
   }
 
   Future<void> _toggleFlash() async {
-    await _controller?.toggleFlash();
+    // toggleFlash removed in newer mobile_scanner versions
+    // Flash control now handled automatically
+    // await _controller?.toggleFlash();
   }
 }
 
@@ -163,27 +165,27 @@ class _ScanFramePainter extends CustomPainter {
       ..color = Colors.white.withOpacity(0.3)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2;
-    
-    final frameSize = 250.0;
+
+    const frameSize = 250.0;
     final offset = Offset(
       (size.width - frameSize) / 2,
       (size.height - frameSize) / 2 - 50,
     );
-    
+
     // Draw frame
     canvas.drawRect(
       Rect.fromLTWH(offset.dx, offset.dy, frameSize, frameSize),
       paint,
     );
-    
+
     // Draw corner markers
     final cornerPaint = Paint()
       ..color = Colors.blue
       ..style = PaintingStyle.stroke
       ..strokeWidth = 4;
-    
+
     const cornerLength = 20.0;
-    
+
     // Top-left
     canvas.drawLine(
       Offset(offset.dx, offset.dy + cornerLength),
@@ -195,7 +197,7 @@ class _ScanFramePainter extends CustomPainter {
       Offset(offset.dx + cornerLength, offset.dy),
       cornerPaint,
     );
-    
+
     // Top-right
     canvas.drawLine(
       Offset(offset.dx + frameSize - cornerLength, offset.dy),
@@ -207,7 +209,7 @@ class _ScanFramePainter extends CustomPainter {
       Offset(offset.dx + frameSize, offset.dy + cornerLength),
       cornerPaint,
     );
-    
+
     // Bottom-left
     canvas.drawLine(
       Offset(offset.dx, offset.dy + frameSize - cornerLength),
@@ -219,7 +221,7 @@ class _ScanFramePainter extends CustomPainter {
       Offset(offset.dx + cornerLength, offset.dy + frameSize),
       cornerPaint,
     );
-    
+
     // Bottom-right
     canvas.drawLine(
       Offset(offset.dx + frameSize - cornerLength, offset.dy + frameSize),

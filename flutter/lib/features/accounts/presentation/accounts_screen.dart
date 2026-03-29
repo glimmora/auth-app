@@ -3,9 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 
-import '../domain/account.dart';
-import '../presentation/account_tile.dart';
-
 /// Main accounts screen - displays list of TOTP/HOTP accounts
 class AccountsScreen extends ConsumerStatefulWidget {
   const AccountsScreen({super.key});
@@ -46,9 +43,8 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
       body: Column(
         children: [
           // Search bar
-          if (_searchQuery.isNotEmpty || _showFavoritesOnly)
-            _buildFilterBar(),
-          
+          if (_searchQuery.isNotEmpty || _showFavoritesOnly) _buildFilterBar(),
+
           // Accounts list
           Expanded(
             child: _buildAccountsList(),

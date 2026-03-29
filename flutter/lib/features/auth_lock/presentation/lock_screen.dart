@@ -18,7 +18,7 @@ class _LockScreenState extends State<LockScreen> {
   int _failedAttempts = 0;
   bool _isLockedOut = false;
   int _lockoutSeconds = 0;
-  
+
   final LocalAuthentication _localAuth = LocalAuthentication();
   bool _canCheckBiometrics = false;
   bool _hasBiometrics = false;
@@ -64,21 +64,23 @@ class _LockScreenState extends State<LockScreen> {
 
   void _handlePinSubmit() {
     final pin = _pinController.text;
-    
+
     // In production, verify against stored hash
-    if (pin == '1234') { // Placeholder
+    if (pin == '1234') {
+      // Placeholder
       _handleSuccess();
     } else {
       _failedAttempts++;
       _showError = true;
       _pinController.clear();
-      
+
       if (_failedAttempts >= 5) {
         _isLockedOut = true;
-        _lockoutSeconds = 30 * (1 << (_failedAttempts - 5)); // Exponential backoff
+        _lockoutSeconds =
+            30 * (1 << (_failedAttempts - 5)); // Exponential backoff
         _startLockoutTimer();
       }
-      
+
       setState(() {});
     }
   }
@@ -118,9 +120,9 @@ class _LockScreenState extends State<LockScreen> {
                 size: 80,
                 color: Colors.white,
               ),
-              
+
               const SizedBox(height: 32),
-              
+
               // Title
               const Text(
                 'AuthVault',
@@ -130,9 +132,9 @@ class _LockScreenState extends State<LockScreen> {
                   color: Colors.white,
                 ),
               ),
-              
+
               const SizedBox(height: 8),
-              
+
               Text(
                 'Enter your PIN to unlock',
                 style: TextStyle(
@@ -140,9 +142,9 @@ class _LockScreenState extends State<LockScreen> {
                   color: Colors.grey[400],
                 ),
               ),
-              
+
               const SizedBox(height: 48),
-              
+
               // Error message
               if (_showError)
                 Container(
@@ -164,7 +166,7 @@ class _LockScreenState extends State<LockScreen> {
                     ],
                   ),
                 ),
-              
+
               // Lockout message
               if (_isLockedOut)
                 Container(
@@ -186,9 +188,9 @@ class _LockScreenState extends State<LockScreen> {
                     ],
                   ),
                 ),
-              
+
               const SizedBox(height: 24),
-              
+
               // PIN input
               if (!_isLockedOut)
                 TextField(
@@ -219,7 +221,8 @@ class _LockScreenState extends State<LockScreen> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Colors.blue, width: 2),
+                      borderSide:
+                          const BorderSide(color: Colors.blue, width: 2),
                     ),
                     errorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -232,9 +235,9 @@ class _LockScreenState extends State<LockScreen> {
                     FilteringTextInputFormatter.digitsOnly,
                   ],
                 ),
-              
+
               const SizedBox(height: 24),
-              
+
               // Submit button
               if (!_isLockedOut)
                 SizedBox(
@@ -253,9 +256,9 @@ class _LockScreenState extends State<LockScreen> {
                     ),
                   ),
                 ),
-              
+
               const SizedBox(height: 16),
-              
+
               // Biometric button
               if (_hasBiometrics && !_isLockedOut)
                 SizedBox(
@@ -272,9 +275,9 @@ class _LockScreenState extends State<LockScreen> {
                     ),
                   ),
                 ),
-              
+
               const Spacer(),
-              
+
               // Forgot PIN
               TextButton(
                 onPressed: () {

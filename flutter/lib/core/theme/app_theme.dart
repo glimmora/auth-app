@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 
 /// App theme configuration
-/// 
+///
 /// Uses Material 3 with Flex Color Scheme for beautiful theming
 class AppTheme {
   /// Light theme
   static ThemeData get lightTheme {
     return FlexThemeData.light(
-      scheme: FlexScheme.materialBase,
+      scheme: FlexScheme.blue,
       useMaterial3: true,
       appBarOpacity: 0.95,
       surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
@@ -18,7 +18,6 @@ class AppTheme {
         blendOnColors: false,
         useTextTheme: true,
         useM2StyleDividerInM3: true,
-        roundedCorners: true,
       ),
       visualDensity: FlexColorScheme.comfortablePlatformDensity,
       useMaterial3ErrorColors: true,
@@ -38,7 +37,6 @@ class AppTheme {
         blendOnColors: false,
         useTextTheme: true,
         useM2StyleDividerInM3: true,
-        roundedCorners: true,
       ),
       visualDensity: FlexColorScheme.comfortablePlatformDensity,
       useMaterial3ErrorColors: true,
@@ -48,7 +46,7 @@ class AppTheme {
   /// AMOLED black theme
   static ThemeData get amoledTheme {
     return FlexThemeData.dark(
-      scheme: FlexScheme.black,
+      scheme: FlexScheme.dark,
       useMaterial3: true,
       appBarOpacity: 1.0,
       surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
@@ -58,7 +56,6 @@ class AppTheme {
         blendOnColors: false,
         useTextTheme: true,
         useM2StyleDividerInM3: true,
-        roundedCorners: true,
       ),
       visualDensity: FlexColorScheme.comfortablePlatformDensity,
       useMaterial3ErrorColors: true,
@@ -69,7 +66,7 @@ class AppTheme {
   static const Color primaryColor = Color(0xFF6C63FF);
   static const Color secondaryColor = Color(0xFF03DAC6);
   static const Color errorColor = Color(0xFFCF6679);
-  
+
   /// Background colors
   static const Color backgroundDark = Color(0xFF0F0F1A);
   static const Color backgroundLight = Color(0xFFFAFAFA);

@@ -4,11 +4,11 @@ import 'package:cryptography/cryptography.dart';
 import 'package:convert/convert.dart';
 
 /// Key Derivation Functions
-/// 
+///
 /// Supports PBKDF2 and Argon2 for deriving encryption keys from passwords
 class KeyDerivation {
   /// PBKDF2 key derivation
-  /// 
+  ///
   /// [password] - User password
   /// [salt] - Random salt (minimum 16 bytes recommended)
   /// [iterations] - Number of iterations (minimum 310,000 per OWASP 2023)
@@ -24,17 +24,17 @@ class KeyDerivation {
       iterations: iterations,
       bits: keyLength * 8,
     );
-    
+
     final key = await pbkdf2.deriveKey(
       secretKey: SecretKey(utf8.encode(password)),
       salt: salt,
     );
-    
+
     return Uint8List.fromList(await key.extractBytes());
   }
 
   /// Argon2 key derivation (more secure, slower)
-  /// 
+  ///
   /// [password] - User password
   /// [salt] - Random salt (minimum 16 bytes)
   /// [iterations] - Number of iterations (default 3)
@@ -56,12 +56,12 @@ class KeyDerivation {
       parallelism: parallelism,
       bits: keyLength * 8,
     );
-    
+
     final key = await argon2.deriveKey(
       secretKey: SecretKey(utf8.encode(password)),
       salt: salt,
     );
-    
+
     return Uint8List.fromList(await key.extractBytes());
   }
 
@@ -74,7 +74,7 @@ class KeyDerivation {
   }
 
   /// Verifies a password against a stored derived key
-  /// 
+  ///
   /// Returns true if the password matches
   static Future<bool> verifyPassword({
     required String password,
@@ -84,7 +84,7 @@ class KeyDerivation {
     int iterations = 310000,
   }) async {
     Uint8List derivedKey;
-    
+
     if (kdf == 'argon2') {
       derivedKey = await argon2(password: password, salt: salt);
     } else {
@@ -94,17 +94,17 @@ class KeyDerivation {
         iterations: iterations,
       );
     }
-    
+
     // Constant-time comparison
     if (derivedKey.length != storedKey.length) {
       return false;
     }
-    
+
     var result = 0;
     for (var i = 0; i < derivedKey.length; i++) {
       result |= derivedKey[i] ^ storedKey[i];
     }
-    
+
     return result == 0;
   }
 }

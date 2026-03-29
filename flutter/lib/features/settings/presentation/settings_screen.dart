@@ -37,7 +37,7 @@ class SettingsScreen extends StatelessWidget {
               // Navigate to auto-lock settings
             },
           ),
-          
+
           // Time Offset section
           const _SectionHeader(title: 'Time'),
           ListTile(
@@ -47,7 +47,7 @@ class SettingsScreen extends StatelessWidget {
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.push('/settings/time-offset'),
           ),
-          
+
           // Appearance section
           const _SectionHeader(title: 'Appearance'),
           ListTile(
@@ -68,7 +68,7 @@ class SettingsScreen extends StatelessWidget {
               // Navigate to language settings
             },
           ),
-          
+
           // Backup section
           const _SectionHeader(title: 'Backup & Sync'),
           ListTile(
@@ -86,7 +86,7 @@ class SettingsScreen extends StatelessWidget {
               // Navigate to restore
             },
           ),
-          
+
           // Import/Export section
           const _SectionHeader(title: 'Data'),
           ListTile(
@@ -105,7 +105,7 @@ class SettingsScreen extends StatelessWidget {
               // Navigate to export
             },
           ),
-          
+
           // About section
           const _SectionHeader(title: 'About'),
           ListTile(
@@ -131,7 +131,7 @@ class SettingsScreen extends StatelessWidget {
 
 class _SectionHeader extends StatelessWidget {
   final String title;
-  
+
   const _SectionHeader({required this.title});
 
   @override

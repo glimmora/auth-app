@@ -1,11 +1,30 @@
-import 'package:equatable/equatable.dart';
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'account.freezed.dart';
 part 'account.g.dart';
 
+/// JsonConverter for Uint8List to Base64 string
+class Uint8ListConverter implements JsonConverter<Uint8List?, String?> {
+  const Uint8ListConverter();
+
+  @override
+  Uint8List? fromJson(String? json) {
+    if (json == null) return null;
+    return base64Decode(json);
+  }
+
+  @override
+  String? toJson(Uint8List? object) {
+    if (object == null) return null;
+    return base64Encode(object);
+  }
+}
+
 /// Account domain model
-/// 
+///
 /// Represents a TOTP/HOTP/Steam account with all configuration
 @freezed
 class Account with _$Account {
@@ -23,7 +42,7 @@ class Account with _$Account {
     required int timeOffset,
     int? groupId,
     String? iconName,
-    Uint8List? iconCustom,
+    @Uint8ListConverter() Uint8List? iconCustom,
     required int sortOrder,
     required bool favorite,
     required bool tapToReveal,
@@ -31,7 +50,8 @@ class Account with _$Account {
     required DateTime updatedAt,
   }) = _Account;
 
-  factory Account.fromJson(Map<String, dynamic> json) => _$AccountFromJson(json);
+  factory Account.fromJson(Map<String, dynamic> json) =>
+      _$AccountFromJson(json);
 }
 
 /// Account type enumeration
@@ -93,11 +113,9 @@ class AppSettings with _$AppSettings {
     required int clipboardClearSeconds,
     required bool biometricEnabled,
     required String? pinHash,
-    required Uint8List? pinSalt,
+    @Uint8ListConverter() Uint8List? pinSalt,
   }) = _AppSettings;
 
   factory AppSettings.fromJson(Map<String, dynamic> json) =>
       _$AppSettingsFromJson(json);
 }
-
-import 'dart:typed_data';

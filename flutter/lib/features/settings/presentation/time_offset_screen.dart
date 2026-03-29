@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Time offset settings screen
-/// 
+///
 /// Allows users to adjust TOTP/HOTP time offset for clock drift
 class TimeOffsetScreen extends ConsumerStatefulWidget {
   const TimeOffsetScreen({super.key});
@@ -36,7 +36,7 @@ class _TimeOffsetScreenState extends ConsumerState<TimeOffsetScreen> {
 
     // Simulate NTP measurement
     await Future.delayed(const Duration(seconds: 2));
-    
+
     setState(() {
       _suggestedOffset = 12; // Example suggested offset
       _isMeasuring = false;
@@ -47,7 +47,7 @@ class _TimeOffsetScreenState extends ConsumerState<TimeOffsetScreen> {
     setState(() {
       _currentOffset = offset;
     });
-    
+
     // Save to settings
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -61,7 +61,7 @@ class _TimeOffsetScreenState extends ConsumerState<TimeOffsetScreen> {
     setState(() {
       _currentOffset = 0;
     });
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Time offset reset to 0s'),
@@ -102,9 +102,9 @@ class _TimeOffsetScreenState extends ConsumerState<TimeOffsetScreen> {
                   ],
                 ),
               ),
-            
+
             if (_currentOffset != 0) const SizedBox(height: 24),
-            
+
             // Slider
             Card(
               child: Padding(
@@ -113,25 +113,27 @@ class _TimeOffsetScreenState extends ConsumerState<TimeOffsetScreen> {
                   children: [
                     const Text(
                       'Adjust Time Offset',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
-                    
+
                     const SizedBox(height: 24),
-                    
+
                     // Slider
                     Slider(
                       value: _currentOffset.toDouble(),
                       min: -300,
                       max: 300,
                       divisions: 600,
-                      label: '${_currentOffset > 0 ? '+' : ''}$_currentOffset s',
+                      label:
+                          '${_currentOffset > 0 ? '+' : ''}$_currentOffset s',
                       onChanged: (value) {
                         setState(() {
                           _currentOffset = value.toInt();
                         });
                       },
                     ),
-                    
+
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -149,9 +151,9 @@ class _TimeOffsetScreenState extends ConsumerState<TimeOffsetScreen> {
                         ),
                       ],
                     ),
-                    
+
                     const SizedBox(height: 24),
-                    
+
                     // Fine adjustment buttons
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -159,12 +161,12 @@ class _TimeOffsetScreenState extends ConsumerState<TimeOffsetScreen> {
                         IconButton(
                           onPressed: () {
                             setState(() {
-                              _currentOffset = (_currentOffset - 1).clamp(-300, 300);
+                              _currentOffset =
+                                  (_currentOffset - 1).clamp(-300, 300);
                             });
                           },
                           icon: const Icon(Icons.remove),
                         ),
-                        
                         Container(
                           width: 80,
                           alignment: Alignment.center,
@@ -176,11 +178,11 @@ class _TimeOffsetScreenState extends ConsumerState<TimeOffsetScreen> {
                             ),
                           ),
                         ),
-                        
                         IconButton(
                           onPressed: () {
                             setState(() {
-                              _currentOffset = (_currentOffset + 1).clamp(-300, 300);
+                              _currentOffset =
+                                  (_currentOffset + 1).clamp(-300, 300);
                             });
                           },
                           icon: const Icon(Icons.add),
@@ -191,9 +193,9 @@ class _TimeOffsetScreenState extends ConsumerState<TimeOffsetScreen> {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // NTP drift measurement
             Card(
               child: Padding(
@@ -203,18 +205,15 @@ class _TimeOffsetScreenState extends ConsumerState<TimeOffsetScreen> {
                   children: [
                     const Text(
                       'NTP Time Sync',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
-                    
                     const SizedBox(height: 12),
-                    
                     Text(
                       'Measure the difference between your device clock and NTP server time.',
                       style: TextStyle(color: Colors.grey[400]),
                     ),
-                    
                     const SizedBox(height: 16),
-                    
                     ElevatedButton.icon(
                       onPressed: _isMeasuring ? null : _measureNTPDrift,
                       icon: _isMeasuring
@@ -224,12 +223,11 @@ class _TimeOffsetScreenState extends ConsumerState<TimeOffsetScreen> {
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
                           : const Icon(Icons.sync),
-                      label: Text(_isMeasuring ? 'Measuring...' : 'Measure NTP Drift'),
+                      label: Text(
+                          _isMeasuring ? 'Measuring...' : 'Measure NTP Drift'),
                     ),
-                    
                     if (_suggestedOffset != 0) ...[
                       const SizedBox(height: 16),
-                      
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
@@ -242,9 +240,7 @@ class _TimeOffsetScreenState extends ConsumerState<TimeOffsetScreen> {
                               'NTP diff detected: ${_suggestedOffset > 0 ? '+' : ''}$_suggestedOffset s',
                               style: const TextStyle(color: Colors.white),
                             ),
-                            
                             const SizedBox(height: 8),
-                            
                             TextButton(
                               onPressed: () => _applyOffset(_suggestedOffset),
                               child: Text(
@@ -260,9 +256,9 @@ class _TimeOffsetScreenState extends ConsumerState<TimeOffsetScreen> {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Preview section
             Card(
               child: Padding(
@@ -272,16 +268,15 @@ class _TimeOffsetScreenState extends ConsumerState<TimeOffsetScreen> {
                   children: [
                     const Text(
                       'Preview with Current Offset',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
-                    
                     const SizedBox(height: 16),
-                    
                     Row(
                       children: [
                         const Text('Current:'),
                         const SizedBox(width: 8),
-                        Text(
+                        const Text(
                           '123 456',
                           style: TextStyle(
                             fontSize: 20,
@@ -296,13 +291,11 @@ class _TimeOffsetScreenState extends ConsumerState<TimeOffsetScreen> {
                         ),
                       ],
                     ),
-                    
                     const SizedBox(height: 8),
-                    
-                    Row(
+                    const Row(
                       children: [
-                        const Text('Next:'),
-                        const SizedBox(width: 8),
+                        Text('Next:'),
+                        SizedBox(width: 8),
                         Text(
                           '789 012',
                           style: TextStyle(
@@ -317,9 +310,9 @@ class _TimeOffsetScreenState extends ConsumerState<TimeOffsetScreen> {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Action buttons
             Row(
               children: [
@@ -332,9 +325,7 @@ class _TimeOffsetScreenState extends ConsumerState<TimeOffsetScreen> {
                     child: const Text('Reset to 0'),
                   ),
                 ),
-                
                 const SizedBox(width: 16),
-                
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () => _applyOffset(_currentOffset),

@@ -35,7 +35,7 @@ class HOTPEngine {
   }) {
     // Decode base32 secret
     final key = _base32Decode(secret.toUpperCase().replaceAll(' ', ''));
-    
+
     // Create counter bytes (big-endian 8 bytes)
     final counterBytes = Uint8List(8);
     for (var i = 7; i >= 0; i--) {
@@ -45,7 +45,7 @@ class HOTPEngine {
 
     // Select hash algorithm
     final hmac = _getHmac(algorithm, key);
-    
+
     // Compute HMAC
     final hash = hmac.process(counterBytes);
 
@@ -59,7 +59,7 @@ class HOTPEngine {
 
     // Generate OTP
     final otp = binaryCode % _pow10(digits);
-    
+
     // Pad with leading zeros
     return otp.toString().padLeft(digits, '0');
   }
@@ -85,26 +85,26 @@ class HOTPEngine {
 
   static Uint8List _base32Decode(String input) {
     input = input.replaceAll('=', '').replaceAll(' ', '');
-    
+
     const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
     final buffer = <int>[];
-    
+
     var bufferValue = 0;
     var bufferLength = 0;
-    
+
     for (final char in input.split('')) {
       final index = alphabet.indexOf(char);
       if (index == -1) continue;
-      
+
       bufferValue = (bufferValue << 5) | index;
       bufferLength += 5;
-      
+
       if (bufferLength >= 8) {
         bufferLength -= 8;
         buffer.add((bufferValue >> bufferLength) & 0xFF);
       }
     }
-    
+
     return Uint8List.fromList(buffer);
   }
 }

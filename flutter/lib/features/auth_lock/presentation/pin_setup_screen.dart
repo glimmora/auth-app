@@ -55,23 +55,23 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 32),
-              
+
               const Icon(
                 Icons.lock_outline,
                 size: 64,
                 color: Colors.blue,
               ),
-              
+
               const SizedBox(height: 24),
-              
+
               const Text(
                 'Create a PIN to protect your AuthVault',
                 style: TextStyle(fontSize: 18),
                 textAlign: TextAlign.center,
               ),
-              
+
               const SizedBox(height: 32),
-              
+
               // PIN input
               TextField(
                 controller: _pinController,
@@ -91,9 +91,9 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
                 ),
                 maxLength: 6,
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // Confirm PIN
               TextField(
                 controller: _confirmController,
@@ -113,7 +113,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
                 ),
                 maxLength: 6,
               ),
-              
+
               // Error message
               if (_showError)
                 Container(
@@ -127,9 +127,9 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
                     style: const TextStyle(color: Colors.white),
                   ),
                 ),
-              
+
               const SizedBox(height: 24),
-              
+
               // Submit button
               ElevatedButton(
                 onPressed: _handleSubmit,

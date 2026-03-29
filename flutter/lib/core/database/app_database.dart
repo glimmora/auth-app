@@ -1,10 +1,15 @@
+import 'dart:io';
+
 import 'package:drift/drift.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
+
 import 'tables/accounts_table.dart';
 
 part 'app_database.g.dart';
 
 /// Main application database
-/// 
+///
 /// Uses SQLite via drift with full encryption at rest
 @DriftDatabase(tables: [Accounts, Groups, Settings, AuditLog])
 class AppDatabase extends _$AppDatabase {
@@ -19,36 +24,36 @@ class AppDatabase extends _$AppDatabase {
     return MigrationStrategy(
       onCreate: (Migrator m) async {
         await m.createAll();
-        
+
         // Insert default settings
         await into(settings).insert(
-          SettingsCompanion(
-            key: const Value('theme'),
-            value: const Value('system'),
+          const SettingsCompanion(
+            key: Value('theme'),
+            value: Value('system'),
           ),
         );
         await into(settings).insert(
-          SettingsCompanion(
-            key: const Value('lock_enabled'),
-            value: const Value('true'),
+          const SettingsCompanion(
+            key: Value('lock_enabled'),
+            value: Value('true'),
           ),
         );
         await into(settings).insert(
-          SettingsCompanion(
-            key: const Value('global_time_offset'),
-            value: const Value('0'),
+          const SettingsCompanion(
+            key: Value('global_time_offset'),
+            value: Value('0'),
           ),
         );
         await into(settings).insert(
-          SettingsCompanion(
-            key: const Value('tap_to_reveal'),
-            value: const Value('false'),
+          const SettingsCompanion(
+            key: Value('tap_to_reveal'),
+            value: Value('false'),
           ),
         );
         await into(settings).insert(
-          SettingsCompanion(
-            key: const Value('clipboard_clear_seconds'),
-            value: const Value('30'),
+          const SettingsCompanion(
+            key: Value('clipboard_clear_seconds'),
+            value: Value('30'),
           ),
         );
       },
@@ -63,29 +68,28 @@ class AppDatabase extends _$AppDatabase {
 
   // Account queries
   Future<List<Account>> getAllAccounts() => select(accounts).get();
-  
+
   Future<List<Account>> getFavoriteAccounts() {
-    return (select(accounts)..where((t) => t.favorite.equals(true)))
-        .get();
+    return (select(accounts)..where((t) => t.favorite.equals(true))).get();
   }
-  
+
   Future<Account?> getAccountByUuid(String uuid) {
     return (select(accounts)..where((t) => t.uuid.equals(uuid)))
         .getSingleOrNull();
   }
-  
+
   Future<int> insertAccount(AccountsCompanion account) {
     return into(accounts).insert(account);
   }
-  
+
   Future<bool> updateAccount(AccountsCompanion account) {
     return update(accounts).replace(account);
   }
-  
+
   Future<int> deleteAccount(String uuid) {
     return (delete(accounts)..where((t) => t.uuid.equals(uuid))).go();
   }
-  
+
   Future<void> reorderAccounts(List<int> ids) async {
     await transaction(() async {
       for (var i = 0; i < ids.length; i++) {
@@ -97,20 +101,20 @@ class AppDatabase extends _$AppDatabase {
 
   // Group queries
   Future<List<Group>> getAllGroups() => select(groups).get();
-  
+
   Future<Group?> getGroupByUuid(String uuid) {
     return (select(groups)..where((t) => t.uuid.equals(uuid)))
         .getSingleOrNull();
   }
-  
+
   Future<int> insertGroup(GroupsCompanion group) {
     return into(groups).insert(group);
   }
-  
+
   Future<bool> updateGroup(GroupsCompanion group) {
     return update(groups).replace(group);
   }
-  
+
   Future<int> deleteGroup(String uuid) {
     return (delete(groups)..where((t) => t.uuid.equals(uuid))).go();
   }
@@ -121,7 +125,7 @@ class AppDatabase extends _$AppDatabase {
         .getSingleOrNull();
     return setting?.value;
   }
-  
+
   Future<void> setSetting(String key, String value) async {
     await into(settings).insertOnConflictUpdate(
       SettingsCompanion(
@@ -130,12 +134,12 @@ class AppDatabase extends _$AppDatabase {
       ),
     );
   }
-  
+
   Future<int> getGlobalTimeOffset() async {
     final value = await getSetting('global_time_offset');
     return value != null ? int.parse(value) : 0;
   }
-  
+
   Future<void> setGlobalTimeOffset(int seconds) async {
     await setSetting('global_time_offset', seconds.toString());
   }
@@ -149,8 +153,9 @@ class AppDatabase extends _$AppDatabase {
           ..limit(limit))
         .get();
   }
-  
-  Future<void> logAction(String action, {String? accountUuid, String? details}) {
+
+  Future<void> logAction(String action,
+      {String? accountUuid, String? details}) {
     return into(auditLog).insert(
       AuditLogCompanion(
         action: Value(action),
@@ -160,7 +165,7 @@ class AppDatabase extends _$AppDatabase {
       ),
     );
   }
-  
+
   Future<void> clearAuditLog() {
     return delete(auditLog).go();
   }
@@ -173,7 +178,3 @@ LazyDatabase _openConnection() {
     return NativeDatabase.createInBackground(file);
   });
 }
-
-import 'dart:io';
-import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';

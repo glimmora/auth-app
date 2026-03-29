@@ -20,8 +20,8 @@ class AccountTile extends ConsumerStatefulWidget {
 
 class _AccountTileState extends ConsumerState<AccountTile> {
   bool _isRevealed = false;
-  String _currentCode = '------';
-  String _nextCode = '------';
+  final String _currentCode = '------';
+  final String _nextCode = '------';
   int _remainingSeconds = 30;
 
   @override
@@ -52,9 +52,9 @@ class _AccountTileState extends ConsumerState<AccountTile> {
             children: [
               // Icon
               _buildIcon(),
-              
+
               const SizedBox(width: 16),
-              
+
               // Account info and code
               Expanded(
                 child: Column(
@@ -73,33 +73,36 @@ class _AccountTileState extends ConsumerState<AccountTile> {
                           const Icon(Icons.star, size: 16, color: Colors.amber),
                       ],
                     ),
-                    
+
                     const SizedBox(height: 4),
-                    
+
                     Text(
                       widget.account.label,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: Colors.grey[400],
                           ),
                     ),
-                    
+
                     const SizedBox(height: 12),
-                    
+
                     // Code and progress
                     Row(
                       children: [
                         // OTP Code
                         Text(
                           _isRevealed ? _currentCode : '• • •   • • •',
-                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineSmall
+                              ?.copyWith(
                                 fontFamily: 'JetBrainsMono',
                                 fontWeight: FontWeight.bold,
                                 letterSpacing: 2,
                               ),
                         ),
-                        
+
                         const Spacer(),
-                        
+
                         // Progress ring
                         OTPProgressRing(
                           progress: _remainingSeconds / 30,
@@ -107,7 +110,7 @@ class _AccountTileState extends ConsumerState<AccountTile> {
                         ),
                       ],
                     ),
-                    
+
                     // Next code preview
                     if (_isRevealed) ...[
                       const SizedBox(height: 8),
@@ -159,7 +162,8 @@ class _AccountTileState extends ConsumerState<AccountTile> {
         backgroundColor: Colors.grey[700],
         child: Text(
           widget.account.issuer[0].toUpperCase(),
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style:
+              const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
       );
     }
@@ -230,16 +234,16 @@ class _AccountTileState extends ConsumerState<AccountTile> {
 
   void _copyCodeToClipboard() {
     Clipboard.setData(ClipboardData(text: _currentCode));
-    
+
     // Show snackbar
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('Code copied to clipboard'),
-        duration: const Duration(seconds: 2),
+      const SnackBar(
+        content: Text('Code copied to clipboard'),
+        duration: Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
       ),
     );
-    
+
     // Auto-clear clipboard after N seconds
     Future.delayed(const Duration(seconds: 30), () {
       Clipboard.setData(const ClipboardData(text: ''));

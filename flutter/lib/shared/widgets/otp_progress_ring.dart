@@ -34,7 +34,7 @@ class OTPProgressRing extends StatelessWidget {
               backgroundColor: Colors.transparent,
             ),
           ),
-          
+
           // Progress ring
           SizedBox(
             width: size,
@@ -50,7 +50,7 @@ class OTPProgressRing extends StatelessWidget {
               ),
             ),
           ),
-          
+
           // Time remaining text
           Text(
             '$remainingSeconds',

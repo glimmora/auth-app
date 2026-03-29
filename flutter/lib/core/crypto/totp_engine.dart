@@ -1,6 +1,4 @@
-import 'dart:convert';
 import 'dart:typed_data';
-import 'package:convert/convert.dart';
 import 'package:pointycastle/digests/sha1.dart';
 import 'package:pointycastle/digests/sha256.dart';
 import 'package:pointycastle/digests/sha512.dart';
@@ -23,7 +21,8 @@ class TOTPEngine {
     OTPAlgorithm algorithm = OTPAlgorithm.SHA1,
     int offset = 0,
   }) {
-    final adjustedTime = (DateTime.now().millisecondsSinceEpoch ~/ 1000) + offset;
+    final adjustedTime =
+        (DateTime.now().millisecondsSinceEpoch ~/ 1000) + offset;
     final counter = adjustedTime ~/ period;
     return _computeHOTP(
       secret: secret,
@@ -35,13 +34,15 @@ class TOTPEngine {
 
   /// Returns seconds remaining in the current time step.
   static int remainingSeconds({int period = 30, int offset = 0}) {
-    final adjustedTime = (DateTime.now().millisecondsSinceEpoch ~/ 1000) + offset;
+    final adjustedTime =
+        (DateTime.now().millisecondsSinceEpoch ~/ 1000) + offset;
     return period - (adjustedTime % period);
   }
 
   /// Returns the progress (0.0 to 1.0) of the current time step.
   static double progress({int period = 30, int offset = 0}) {
-    final adjustedTime = (DateTime.now().millisecondsSinceEpoch ~/ 1000) + offset;
+    final adjustedTime =
+        (DateTime.now().millisecondsSinceEpoch ~/ 1000) + offset;
     return (adjustedTime % period) / period;
   }
 
@@ -53,7 +54,8 @@ class TOTPEngine {
     OTPAlgorithm algorithm = OTPAlgorithm.SHA1,
     int offset = 0,
   }) {
-    final adjustedTime = (DateTime.now().millisecondsSinceEpoch ~/ 1000) + offset;
+    final adjustedTime =
+        (DateTime.now().millisecondsSinceEpoch ~/ 1000) + offset;
     final counter = (adjustedTime ~/ period) + 1;
     return _computeHOTP(
       secret: secret,
@@ -71,7 +73,7 @@ class TOTPEngine {
   }) {
     // Decode base32 secret
     final key = _base32Decode(secret.toUpperCase().replaceAll(' ', ''));
-    
+
     // Create counter bytes (big-endian 8 bytes)
     final counterBytes = Uint8List(8);
     for (var i = 7; i >= 0; i--) {
@@ -81,7 +83,7 @@ class TOTPEngine {
 
     // Select hash algorithm
     final hmac = _getHmac(algorithm, key);
-    
+
     // Compute HMAC
     final hash = hmac.process(counterBytes);
 
@@ -95,7 +97,7 @@ class TOTPEngine {
 
     // Generate OTP
     final otp = binaryCode % _pow10(digits);
-    
+
     // Pad with leading zeros
     return otp.toString().padLeft(digits, '0');
   }
@@ -122,26 +124,26 @@ class TOTPEngine {
   static Uint8List _base32Decode(String input) {
     // Remove padding and whitespace
     input = input.replaceAll('=', '').replaceAll(' ', '');
-    
+
     const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
     final buffer = <int>[];
-    
+
     var bufferValue = 0;
     var bufferLength = 0;
-    
+
     for (final char in input.split('')) {
       final index = alphabet.indexOf(char);
       if (index == -1) continue;
-      
+
       bufferValue = (bufferValue << 5) | index;
       bufferLength += 5;
-      
+
       if (bufferLength >= 8) {
         bufferLength -= 8;
         buffer.add((bufferValue >> bufferLength) & 0xFF);
       }
     }
-    
+
     return Uint8List.fromList(buffer);
   }
 }

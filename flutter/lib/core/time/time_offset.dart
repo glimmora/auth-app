@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 /// Time Offset Service
-/// 
+///
 /// Manages custom time offset for TOTP/HOTP synchronization
 /// Range: -300 to +300 seconds (±5 minutes)
 class TimeOffsetService {
@@ -24,11 +24,12 @@ class TimeOffsetService {
   }
 
   /// Sets the time offset
-  /// 
+  ///
   /// [seconds] must be between -300 and +300
   Future<void> setOffset(int seconds) async {
     if (seconds < _minOffset || seconds > _maxOffset) {
-      throw ArgumentError('Offset must be between $_minOffset and $_maxOffset seconds');
+      throw ArgumentError(
+          'Offset must be between $_minOffset and $_maxOffset seconds');
     }
     _offsetNotifier.value = seconds;
     // Will persist to secure storage
@@ -40,18 +41,18 @@ class TimeOffsetService {
   }
 
   /// Checks difference between device time and NTP time
-  /// 
+  ///
   /// Returns suggested offset based on NTP pool measurement
   Future<int> measureNTPDrift() async {
     try {
       // Query NTP pool and calculate delta
       // This is a simplified version - full implementation would use NTP protocol
       final deviceTime = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-      
+
       // In production, query pool.ntp.org via NTP protocol
       // For now, return 0 (no adjustment)
       final ntpTime = deviceTime; // Placeholder
-      
+
       return ntpTime - deviceTime;
     } catch (e) {
       debugPrint('Error measuring NTP drift: $e');

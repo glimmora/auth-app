@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:share_plus/share_plus.dart';
 
 /// Backup and restore screen
 class BackupScreen extends StatelessWidget {
@@ -27,16 +26,12 @@ class BackupScreen extends StatelessWidget {
                     'Export all accounts to an encrypted file',
                     style: TextStyle(fontSize: 16),
                   ),
-                  
                   const SizedBox(height: 8),
-                  
                   Text(
                     'Backup file is encrypted with AES-256-GCM. Keep it safe and never share it.',
                     style: TextStyle(color: Colors.grey[400], fontSize: 14),
                   ),
-                  
                   const SizedBox(height: 16),
-                  
                   ElevatedButton.icon(
                     onPressed: () => _exportBackup(context),
                     icon: const Icon(Icons.file_download),
@@ -45,9 +40,7 @@ class BackupScreen extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
                   ),
-                  
                   const SizedBox(height: 8),
-                  
                   OutlinedButton.icon(
                     onPressed: () => _exportToCloud(context),
                     icon: const Icon(Icons.cloud_upload),
@@ -60,9 +53,9 @@ class BackupScreen extends StatelessWidget {
               ),
             ),
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Import section
           const _SectionHeader(title: 'Import Backup'),
           Card(
@@ -75,16 +68,12 @@ class BackupScreen extends StatelessWidget {
                     'Restore accounts from a backup file',
                     style: TextStyle(fontSize: 16),
                   ),
-                  
                   const SizedBox(height: 8),
-                  
                   Text(
                     'Supports .avx backup files from AuthVault.',
                     style: TextStyle(color: Colors.grey[400], fontSize: 14),
                   ),
-                  
                   const SizedBox(height: 16),
-                  
                   ElevatedButton.icon(
                     onPressed: () => _importBackup(context),
                     icon: const Icon(Icons.file_upload),
@@ -97,9 +86,9 @@ class BackupScreen extends StatelessWidget {
               ),
             ),
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Cloud backup section
           const _SectionHeader(title: 'Cloud Backup'),
           Card(
@@ -119,9 +108,7 @@ class BackupScreen extends StatelessWidget {
                       child: const Text('Connect'),
                     ),
                   ),
-                  
                   const Divider(),
-                  
                   ListTile(
                     leading: const Icon(Icons.folder),
                     title: const Text('Dropbox'),
@@ -133,22 +120,20 @@ class BackupScreen extends StatelessWidget {
                       child: const Text('Connect'),
                     ),
                   ),
-                  
                   const Divider(),
-                  
-                  ListTile(
-                    leading: const Icon(Icons.cloud),
-                    title: const Text('iCloud'),
-                    subtitle: const Text('Not available'),
-                    trailing: const Icon(Icons.lock, size: 20),
+                  const ListTile(
+                    leading: Icon(Icons.cloud),
+                    title: Text('iCloud'),
+                    subtitle: Text('Not available'),
+                    trailing: Icon(Icons.lock, size: 20),
                   ),
                 ],
               ),
             ),
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // QR Export section
           const _SectionHeader(title: 'QR Export'),
           Card(
@@ -161,9 +146,7 @@ class BackupScreen extends StatelessWidget {
                     'Export accounts as QR codes for transfer to another device',
                     style: TextStyle(fontSize: 16),
                   ),
-                  
                   const SizedBox(height: 16),
-                  
                   ElevatedButton.icon(
                     onPressed: () => _exportQR(context),
                     icon: const Icon(Icons.qr_code),
@@ -176,9 +159,9 @@ class BackupScreen extends StatelessWidget {
               ),
             ),
           ),
-          
+
           const SizedBox(height: 32),
-          
+
           // Last backup info
           Card(
             color: Colors.blue[900],
@@ -215,7 +198,7 @@ class BackupScreen extends StatelessWidget {
         type: FileType.custom,
         allowedExtensions: ['avx'],
       );
-      
+
       if (path != null && context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Backup saved to $path')),
@@ -247,7 +230,7 @@ class BackupScreen extends StatelessWidget {
         type: FileType.custom,
         allowedExtensions: ['avx'],
       );
-      
+
       if (result != null && result.files.single.path != null) {
         // In production, decrypt and import
         if (context.mounted) {
@@ -278,7 +261,7 @@ class BackupScreen extends StatelessWidget {
 
 class _SectionHeader extends StatelessWidget {
   final String title;
-  
+
   const _SectionHeader({required this.title});
 
   @override

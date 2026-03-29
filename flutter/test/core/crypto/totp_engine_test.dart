@@ -32,7 +32,7 @@ void main() {
 
     test('remainingSeconds is within valid range', () {
       final remaining = TOTPEngine.remainingSeconds(period: 30, offset: 0);
-      
+
       expect(remaining, greaterThan(0));
       expect(remaining, lessThanOrEqualTo(30));
     });
@@ -42,12 +42,12 @@ void main() {
         secret: 'TESTSECRET123456',
         offset: 0,
       );
-      
+
       final code30 = TOTPEngine.generate(
         secret: 'TESTSECRET123456',
         offset: 30,
       );
-      
+
       // Codes may or may not be different depending on timing
       // but both should be valid 6-digit codes
       expect(code0.length, equals(6));
@@ -59,34 +59,34 @@ void main() {
         secret: 'TESTSECRET123456',
         offset: 0,
       );
-      
+
       final next = TOTPEngine.nextCode(
         secret: 'TESTSECRET123456',
         offset: 0,
       );
-      
+
       expect(current.length, equals(6));
       expect(next.length, equals(6));
     });
 
     test('different algorithms produce different codes', () {
-      final secret = 'TESTSECRET123456';
-      
+      const secret = 'TESTSECRET123456';
+
       final sha1 = TOTPEngine.generate(
         secret: secret,
         algorithm: OTPAlgorithm.SHA1,
       );
-      
+
       final sha256 = TOTPEngine.generate(
         secret: secret,
         algorithm: OTPAlgorithm.SHA256,
       );
-      
+
       final sha512 = TOTPEngine.generate(
         secret: secret,
         algorithm: OTPAlgorithm.SHA512,
       );
-      
+
       // All should be valid 6-digit codes
       expect(sha1.length, equals(6));
       expect(sha256.length, equals(6));

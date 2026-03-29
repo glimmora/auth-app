@@ -5,9 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 
 import 'core/router/app_router.dart';
-import 'core/theme/app_theme.dart';
-import 'features/accounts/presentation/accounts_screen.dart';
-import 'features/auth_lock/presentation/lock_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -55,7 +52,7 @@ class _AuthVaultAppState extends ConsumerState<AuthVaultApp> {
       debugShowCheckedModeBanner: false,
       themeMode: ThemeMode.dark,
       theme: FlexThemeData.light(
-        scheme: FlexScheme.materialBase,
+        scheme: FlexScheme.blue,
         useMaterial3: true,
       ),
       darkTheme: FlexThemeData.dark(

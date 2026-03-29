@@ -24,16 +24,17 @@ if (flutterVersionName == null) {
 
 android {
     namespace "app.authvault.android"
-    compileSdk 35
-    ndkVersion flutter.ndkVersion
+    compileSdk 36
+    ndkVersion "27.2.12479018"
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        coreLibraryDesugaringEnabled true
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
     }
 
     kotlinOptions {
-        jvmTarget = '17'
+        jvmTarget = '21'
     }
 
     sourceSets {
@@ -43,7 +44,7 @@ android {
     defaultConfig {
         applicationId "app.authvault.android"
         minSdk 26
-        targetSdk 35
+        targetSdk 36
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true
@@ -69,4 +70,7 @@ flutter {
     source '../..'
 }
 
-dependencies {}
+dependencies {
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.4'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+}
