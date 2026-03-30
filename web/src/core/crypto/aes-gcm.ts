@@ -95,10 +95,15 @@ export async function decryptPacked(
   const tag = packed.slice(-16);
   const ciphertext = packed.slice(12, -16);
 
+  // Web Crypto expects ciphertext + tag combined
+  const combined = new Uint8Array(ciphertext.length + tag.length);
+  combined.set(ciphertext, 0);
+  combined.set(tag, ciphertext.length);
+
   const result = await crypto.subtle.decrypt(
     { name: 'AES-GCM', iv: new Uint8Array(iv) },
     key,
-    ciphertext as unknown as ArrayBuffer
+    combined as unknown as ArrayBuffer
   );
 
   return new Uint8Array(result);

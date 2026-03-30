@@ -126,14 +126,14 @@ function getHmac(algorithm: OTPAlgorithm, keyHex: string): string {
 
   switch (algorithm) {
     case 'SHA256':
-      // @ts-ignore - crypto-js API
+      // @ts-expect-error - crypto-js API
       return HmacSHA256('', key).toString();
     case 'SHA512':
-      // @ts-ignore - crypto-js API
+      // @ts-expect-error - crypto-js API
       return HmacSHA512('', key).toString();
     case 'SHA1':
     default:
-      // @ts-ignore - crypto-js API
+      // @ts-expect-error - crypto-js API
       return HmacSHA1('', key).toString();
   }
 }

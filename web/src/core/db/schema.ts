@@ -54,7 +54,7 @@ class AuthVaultDB extends Dexie {
     super('AuthVaultDB');
 
     this.version(1).stores({
-      accounts: '++id, uuid, issuer, label, groupId, sortOrder, createdAt',
+      accounts: '++id, uuid, issuer, label, groupId, sortOrder, favorite, createdAt',
       groups: '++id, uuid, name, color, sortOrder, createdAt',
       settings: 'key',
       auditLog: '++id, action, accountUuid, timestamp',
