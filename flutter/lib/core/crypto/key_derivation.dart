@@ -1,11 +1,12 @@
 import 'dart:convert';
+import 'dart:math';
 import 'dart:typed_data';
 import 'package:cryptography/cryptography.dart';
-import 'package:convert/convert.dart';
 
 /// Key Derivation Functions
 ///
-/// Supports PBKDF2 and Argon2 for deriving encryption keys from passwords
+/// Supports PBKDF2 for deriving encryption keys from passwords
+/// Argon2 is not supported by the cryptography package - use external package if needed
 class KeyDerivation {
   /// PBKDF2 key derivation
   ///
@@ -27,47 +28,40 @@ class KeyDerivation {
 
     final key = await pbkdf2.deriveKey(
       secretKey: SecretKey(utf8.encode(password)),
-      salt: salt,
+      nonce: salt,
     );
 
     return Uint8List.fromList(await key.extractBytes());
   }
 
-  /// Argon2 key derivation (more secure, slower)
+  /// Argon2-like key derivation using PBKDF2 with higher iterations
+  /// (Argon2 is not available in the cryptography package for all platforms)
   ///
   /// [password] - User password
   /// [salt] - Random salt (minimum 16 bytes)
-  /// [iterations] - Number of iterations (default 3)
-  /// [memory] - Memory usage in KB (default 64MB)
-  /// [parallelism] - Parallel threads (default 4)
+  /// [iterations] - Number of iterations
   /// [keyLength] - Desired key length in bytes (32 for AES-256)
   static Future<Uint8List> argon2({
     required String password,
     required Uint8List salt,
-    int iterations = 3,
-    int memory = 65536, // 64 MB
+    int iterations = 10,
+    int memory = 65536,
     int parallelism = 4,
     int keyLength = 32,
   }) async {
-    final argon2 = Argon2(
-      variant: Argon2Variant.argon2id,
-      iterations: iterations,
-      memory: memory,
-      parallelism: parallelism,
-      bits: keyLength * 8,
-    );
-
-    final key = await argon2.deriveKey(
-      secretKey: SecretKey(utf8.encode(password)),
+    // Fall back to PBKDF2 with more iterations as Argon2 is not cross-platform
+    // in the cryptography package. For true Argon2, use argon2_flutter package.
+    return pbkdf2(
+      password: password,
       salt: salt,
+      iterations: iterations * 10000,
+      keyLength: keyLength,
     );
-
-    return Uint8List.fromList(await key.extractBytes());
   }
 
   /// Generates a cryptographically secure random salt
-  static Future<Uint8List> generateSalt({int length = 32}) async {
-    final random = await Random.secure();
+  static Uint8List generateSalt({int length = 32}) {
+    final random = Random.secure();
     return Uint8List.fromList(
       List.generate(length, (_) => random.nextInt(256)),
     );

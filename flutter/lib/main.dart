@@ -64,7 +64,6 @@ class _AuthVaultAppState extends ConsumerState<AuthVaultApp> {
         subThemesData: const FlexSubThemesData(
           blendOnLevel: 10,
           blendOnColors: false,
-          useTextTheme: true,
           useM2StyleDividerInM3: true,
         ),
         visualDensity: FlexColorScheme.comfortablePlatformDensity,

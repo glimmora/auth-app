@@ -22,29 +22,52 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
+// Load keystore properties
+def keystorePropertiesFile = rootProject.file('../../../scripts/keystore/keystore.properties')
+def keystoreProperties = new Properties()
+def hasKeystore = false
+
+if (keystorePropertiesFile.exists()) {
+    keystorePropertiesFile.withReader('UTF-8') { reader ->
+        keystoreProperties.load(reader)
+    }
+    hasKeystore = true
+}
+
 android {
     namespace "app.authvault.android"
-    compileSdk 36
+    compileSdk 35
     ndkVersion "27.2.12479018"
 
     compileOptions {
         coreLibraryDesugaringEnabled true
-        sourceCompatibility JavaVersion.VERSION_21
-        targetCompatibility JavaVersion.VERSION_21
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = '21'
+        jvmTarget = '17'
     }
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
 
+    signingConfigs {
+        if (hasKeystore) {
+            release {
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword keystoreProperties['keyPassword']
+                storeFile file(keystoreProperties['storeFile'])
+                storePassword keystoreProperties['storePassword']
+            }
+        }
+    }
+
     defaultConfig {
         applicationId "app.authvault.android"
-        minSdk 26
-        targetSdk 36
+        minSdkVersion flutter.minSdkVersion
+        targetSdk 35
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true
@@ -52,7 +75,11 @@ android {
 
     buildTypes {
         release {
-            signingConfig signingConfigs.debug
+            if (hasKeystore) {
+                signingConfig signingConfigs.release
+            } else {
+                signingConfig signingConfigs.debug
+            }
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -64,6 +91,7 @@ android {
             applicationIdSuffix '.profile'
         }
     }
+
 }
 
 flutter {

@@ -1,7 +1,7 @@
 import 'dart:convert';
+import 'dart:math';
 import 'dart:typed_data';
 import 'package:cryptography/cryptography.dart';
-import 'package:convert/convert.dart';
 
 /// AES-256-GCM encryption/decryption
 ///
@@ -18,10 +18,10 @@ class AESGCM {
     required Uint8List plaintext,
     required Uint8List key,
   }) async {
-    final algorithm = AesGcm.with256Bits();
+    final algorithm = AesGcm.with256bits();
 
     // Generate random 96-bit IV
-    final iv = await _generateIV();
+    final iv = _generateIV();
 
     // Encrypt
     final result = await algorithm.encrypt(
@@ -32,8 +32,8 @@ class AESGCM {
 
     return {
       'iv': base64Encode(iv),
-      'ciphertext': base64Encode(result.ciphertext),
-      'tag': base64Encode(result.authenticationTag),
+      'ciphertext': base64Encode(result.cipherText),
+      'tag': base64Encode(result.mac.bytes),
     };
   }
 
@@ -46,13 +46,17 @@ class AESGCM {
     required String tag,
     required Uint8List key,
   }) async {
-    final algorithm = AesGcm.with256Bits();
+    final algorithm = AesGcm.with256bits();
+
+    final secretBox = SecretBox(
+      base64Decode(ciphertext),
+      nonce: base64Decode(iv),
+      mac: Mac(base64Decode(tag)),
+    );
 
     final decrypted = await algorithm.decrypt(
-      base64Decode(ciphertext),
+      secretBox,
       secretKey: SecretKey(key),
-      nonce: base64Decode(iv),
-      authenticationTag: base64Decode(tag),
     );
 
     return Uint8List.fromList(decrypted);
@@ -96,16 +100,16 @@ class AESGCM {
     );
   }
 
-  static Future<Uint8List> _generateIV() async {
-    final random = await Random.secure();
+  static Uint8List _generateIV() {
+    final random = Random.secure();
     return Uint8List.fromList(
       List.generate(12, (_) => random.nextInt(256)),
     );
   }
 
   /// Generates a random 256-bit key
-  static Future<Uint8List> generateKey() async {
-    final random = await Random.secure();
+  static Uint8List generateKey() {
+    final random = Random.secure();
     return Uint8List.fromList(
       List.generate(32, (_) => random.nextInt(256)),
     );

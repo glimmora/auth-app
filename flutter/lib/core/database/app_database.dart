@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:drift/drift.dart';
+import 'package:drift/native.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
@@ -145,7 +146,7 @@ class AppDatabase extends _$AppDatabase {
   }
 
   // Audit log queries
-  Future<List<AuditLog>> getAuditLog({int limit = 100}) {
+  Future<List<AuditLogData>> getAuditLog({int limit = 100}) {
     return (select(auditLog)
           ..orderBy([
             (t) => OrderingTerm.desc(t.timestamp),

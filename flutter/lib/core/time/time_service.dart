@@ -12,6 +12,8 @@ class TimeService {
 
   final ValueNotifier<DateTime> _currentTime =
       ValueNotifier<DateTime>(DateTime.now());
+  final StreamController<DateTime> _streamController =
+      StreamController<DateTime>.broadcast();
   Timer? _timer;
 
   /// Current time
@@ -23,7 +25,11 @@ class TimeService {
   /// Starts the time update timer
   void start() {
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      _currentTime.value = DateTime.now();
+      final newTime = DateTime.now();
+      _currentTime.value = newTime;
+      if (!_streamController.isClosed) {
+        _streamController.add(newTime);
+      }
     });
   }
 
@@ -47,12 +53,14 @@ class TimeService {
 
   /// Stream of time updates (emits every second)
   Stream<DateTime> get timeStream {
-    return _currentTime.stream;
+    return _streamController.stream;
   }
 
   /// Disposes resources
   void dispose() {
     stop();
+    _streamController.close();
     _currentTime.dispose();
   }
 }
+

@@ -1,5 +1,6 @@
 import 'dart:typed_data';
-import 'package:pointycastle/mac/hmac.dart';
+import 'package:cryptography/cryptography.dart';
+
 
 /// Steam Guard TOTP variant
 ///
@@ -12,10 +13,10 @@ class SteamGuard {
   ///
   /// [secret] Base32-encoded shared secret
   /// [offset] Custom time offset in seconds
-  static String generateCode({
+  static Future<String> generateCode({
     required String secret,
     int offset = 0,
-  }) {
+  }) async {
     final adjustedTime =
         (DateTime.now().millisecondsSinceEpoch ~/ 1000) + offset;
     final counter = adjustedTime ~/ 30;
@@ -30,9 +31,11 @@ class SteamGuard {
       c = c >> 8;
     }
 
-    // Compute HMAC-SHA1
-    final hmac = Hmac(SHA1(), key);
-    final hash = hmac.process(counterBytes);
+    // Compute HMAC-SHA1 using cryptography package
+    final mac = Hmac.sha1();
+    final secretKey = SecretKey(key);
+    final signature = await mac.calculateMac(counterBytes, secretKey: secretKey);
+    final hash = Uint8List.fromList(signature.bytes);
 
     // Dynamic truncation
     final offsetByte = hash[hash.length - 1] & 0x0F;

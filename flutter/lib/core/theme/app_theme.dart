@@ -16,7 +16,6 @@ class AppTheme {
       subThemesData: const FlexSubThemesData(
         blendOnLevel: 10,
         blendOnColors: false,
-        useTextTheme: true,
         useM2StyleDividerInM3: true,
       ),
       visualDensity: FlexColorScheme.comfortablePlatformDensity,
@@ -35,7 +34,6 @@ class AppTheme {
       subThemesData: const FlexSubThemesData(
         blendOnLevel: 10,
         blendOnColors: false,
-        useTextTheme: true,
         useM2StyleDividerInM3: true,
       ),
       visualDensity: FlexColorScheme.comfortablePlatformDensity,
@@ -46,7 +44,7 @@ class AppTheme {
   /// AMOLED black theme
   static ThemeData get amoledTheme {
     return FlexThemeData.dark(
-      scheme: FlexScheme.dark,
+      scheme: FlexScheme.deepBlue,
       useMaterial3: true,
       appBarOpacity: 1.0,
       surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
@@ -54,7 +52,6 @@ class AppTheme {
       subThemesData: const FlexSubThemesData(
         blendOnLevel: 0,
         blendOnColors: false,
-        useTextTheme: true,
         useM2StyleDividerInM3: true,
       ),
       visualDensity: FlexColorScheme.comfortablePlatformDensity,
@@ -78,3 +75,4 @@ class AppTheme {
   static const String fontFamily = 'Inter';
   static const String monoFontFamily = 'JetBrainsMono';
 }
+
