@@ -49,7 +49,7 @@ if [[ "$BUILD_TYPE" == "aab" || "$BUILD_TYPE" == "both" ]]; then
     --obfuscate \
     --split-debug-info="$OUTPUT_DIR/debug-info-aab"
 
-  cp build/app/outputs/bundle/"$FLAVOR"App/*.aab "$OUTPUT_DIR/"
+  cp build/app/outputs/bundle/"$FLAVOR"/*.aab "$OUTPUT_DIR/"
   echo "✅ AAB built: $OUTPUT_DIR/"
 fi
 

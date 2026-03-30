@@ -4,6 +4,8 @@ import 'package:pointycastle/digests/sha256.dart';
 import 'package:pointycastle/digests/sha512.dart';
 import 'package:pointycastle/macs/hmac.dart';
 
+import 'otp_algorithm.dart';
+
 /// HOTP Algorithm as per RFC 4226
 /// Counter-based OTP (used for hardware tokens and some services)
 class HOTPEngine {
@@ -108,9 +110,6 @@ class HOTPEngine {
     return Uint8List.fromList(buffer);
   }
 }
-
-// Reuse the enum from TOTP engine
-enum OTPAlgorithm { SHA1, SHA256, SHA512 }
 
 extension HOTPAlgorithmExtension on OTPAlgorithm {
   String get name {

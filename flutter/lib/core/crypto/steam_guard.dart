@@ -1,5 +1,6 @@
 import 'dart:typed_data';
-import 'package:pointycastle/mac/hmac.dart';
+import 'package:pointycastle/macs/hmac.dart';
+import 'package:pointycastle/digests/sha1.dart';
 
 /// Steam Guard TOTP variant
 ///
@@ -31,7 +32,7 @@ class SteamGuard {
     }
 
     // Compute HMAC-SHA1
-    final hmac = Hmac(SHA1(), key);
+    final hmac = HMac.withDigest(SHA1Digest());
     final hash = hmac.process(counterBytes);
 
     // Dynamic truncation

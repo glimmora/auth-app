@@ -23,7 +23,11 @@ class TimeService {
   /// Starts the time update timer
   void start() {
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      _currentTime.value = DateTime.now();
+      final now = DateTime.now();
+      _currentTime.value = now;
+      if (!_streamController.isClosed) {
+        _streamController.add(now);
+      }
     });
   }
 
@@ -45,14 +49,16 @@ class TimeService {
     return (adjustedTime % period) / period;
   }
 
+  final StreamController<DateTime> _streamController =
+      StreamController<DateTime>.broadcast();
+
   /// Stream of time updates (emits every second)
-  Stream<DateTime> get timeStream {
-    return _currentTime.stream;
-  }
+  Stream<DateTime> get timeStream => _streamController.stream;
 
   /// Disposes resources
   void dispose() {
     stop();
+    _streamController.close();
     _currentTime.dispose();
   }
 }
