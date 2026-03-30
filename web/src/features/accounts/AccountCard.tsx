@@ -10,7 +10,7 @@ interface AccountCardProps {
   index: number;
 }
 
-export function AccountCard({ account, index }: AccountCardProps) {
+export function AccountCard({ account }: AccountCardProps) {
   const { globalTimeOffset } = useAccountStore();
   const { code, remaining, nextCode, progress } = useTOTP(account, globalTimeOffset);
   const [isRevealed, setIsRevealed] = useState(!account.tapToReveal);
