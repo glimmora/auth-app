@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { useTOTP, TOTPState } from '@/hooks/useTOTP';
+import { useTOTP } from '@/hooks/useTOTP';
 import { Account } from '@/core/db/schema';
 
 function makeAccount(overrides: Partial<Account> = {}): Account {
