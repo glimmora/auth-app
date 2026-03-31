@@ -25,9 +25,6 @@ FLUTTER_DIR="$ROOT_DIR/flutter"
 WEB_DIR="$ROOT_DIR/web"
 CACHE_DIR="$ROOT_DIR/.cache"
 
-# Sudo password
-SUDO_PASS="LO3QERKYFWAVIRZQS7JNHNHKMGCIZTRB"
-
 # Results
 declare -A RESULTS
 PASSED=0
@@ -57,11 +54,7 @@ print_step() { echo -e "${CYAN}▸${NC} $1"; }
 print_test() { echo -e "${MAGENTA}◆${NC} $1"; }
 
 sudo_cmd() {
-    if echo "$SUDO_PASS" | sudo -S echo "" 2>/dev/null; then
-        echo "$SUDO_PASS" | sudo -S "$@" 2>/dev/null
-    else
-        "$@" 2>/dev/null || true
-    fi
+    sudo "$@"
 }
 
 ensure_cache() {

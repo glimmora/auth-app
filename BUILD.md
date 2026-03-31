@@ -1,106 +1,110 @@
-# AuthVault - Build Instructions
+# AuthVault — Build Instructions
 
-## Quick Build Commands
-
-```bash
-cd /home/ubuntu/auth-app
-
-# First time: Install Android SDK and dependencies
-./scripts/fix.sh all
-
-# Build Android (split APKs + AAB)
-./scripts/build.sh android
-
-# Build Linux
-./scripts/build.sh linux
-
-# Build Web
-./scripts/build.sh web
-
-# Build all platforms
-./scripts/build.sh all
-```
-
-## Manual Setup (Required Once)
-
-The scripts need these system packages installed:
+## Quick Build
 
 ```bash
-# Install build dependencies (required for Flutter Linux builds)
-sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev unzip lld
+cd auth-app
 
-# The script will use this sudo password when prompted:
-# LO3QERKYFWAVIRZQS7JNHNHKMGCIZTRB
+# Build Android (split APKs by ABI, signed with release key)
+flutter build apk --release --split-per-abi --android-skip-build-dependency-validation
+
+# Build Web (PWA)
+cd flutter && flutter build web --no-wasm-dry-run
 ```
 
-## Android SDK
+Or use the automation scripts:
 
-The Android SDK is already installed at: `/home/ubuntu/Android`
+```bash
+./scripts/fix.sh all          # Install all dependencies (cached)
+./scripts/build.sh android    # Android build (split + signed)
+./scripts/build.sh web        # Web build
+./scripts/build.sh all        # All platforms
+```
 
-The scripts automatically detect and use it. No manual setup needed.
+## Prerequisites
+
+| Requirement | Version | Notes |
+|-------------|---------|-------|
+| Flutter | 3.43+ (master channel) | See `flutter --version` |
+| Dart | 3.10+ | Bundled with Flutter |
+| Java | 17+ | `java -version` |
+| Android SDK | API 35, Build Tools 35.0.0, NDK 27.x | Auto-installed by `fix.sh sdk` |
+| Node.js | 18+ | For web dev server (optional) |
+
+## Android Signing
+
+Release APKs are signed using a keystore configured via `flutter/android/key.properties`:
+
+```properties
+storePassword=<your-password>
+keyPassword=<your-password>
+keyAlias=authvault
+storeFile=../keystore/release.jks
+```
+
+Create the keystore:
+
+```bash
+keytool -genkey -v \
+  -keystore flutter/android/keystore/release.jks \
+  -keyalg RSA -keysize 2048 -validity 10000 \
+  -alias authvault
+```
 
 ## Build Outputs
 
-### Android
+### Android — ABI-split APKs
+
 ```
-flutter/build/outputs/android/
-├── app-armeabi-v7a-release.apk    # 32-bit ARM
-├── app-arm64-v8a-release.apk      # 64-bit ARM
-├── app-x86_64-release.apk         # 64-bit x86
-└── app-release.aab                # Play Store bundle
+flutter/build/app/outputs/flutter-apk/
+├── app-armeabi-v7a-release.apk   # 32-bit ARM  (~22 MB)
+├── app-arm64-v8a-release.apk     # 64-bit ARM  (~26 MB)
+└── app-x86_64-release.apk        # 64-bit x86  (~28 MB)
 ```
 
-### Linux
+### Web (Flutter)
+
 ```
-flutter/build/outputs/linux/authvault/authvault
+flutter/build/web/
+├── index.html
+├── main.dart.js
+├── flutter.js
+├── flutter_service_worker.js
+├── assets/
+└── canvaskit/
 ```
 
-### Web
+### Web (React/Vite)
+
 ```
 web/dist/
+├── index.html
+└── assets/
 ```
 
-## Signing
-
-To sign Android builds:
+## Verify APK Signature
 
 ```bash
-# Create keystore (first time only)
-./scripts/setup-keystore.sh
-
-# Subsequent builds are automatically signed
-./scripts/build.sh android
+$ANDROID_HOME/build-tools/35.0.0/apksigner verify \
+  --verbose flutter/build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
 ```
 
 ## Troubleshooting
 
-### "lld not found"
-```bash
-sudo apt-get install -y lld
-```
+| Problem | Solution |
+|---------|----------|
+| "Android SDK not found" | `export ANDROID_HOME=$HOME/sdk/android` |
+| "Keystore file not found" | Check `key.properties` path is relative to `app/` |
+| Kotlin version mismatch | Ensure `settings.gradle` and `build.gradle` use same Kotlin version |
+| Gradle cache corruption | `rm -rf ~/.gradle/caches/` then rebuild |
+| "flex_color_scheme" compile error | Upgrade to `^8.3.0` in `pubspec.yaml` |
+| Web platform not configured | `cd flutter && flutter create . --platforms web` |
 
-### "Android SDK not found"
-```bash
-./scripts/fix.sh sdk
-```
+## Kotlin / Gradle Versions
 
-### "Build failed - codegen"
-```bash
-./scripts/fix.sh codegen
-```
-
-### Clear cache and rebuild
-```bash
-rm -rf .cache/
-./scripts/fix.sh all
-./scripts/build.sh all
-```
-
-## Cache
-
-All downloads are cached:
-- `.cache/pub/` - Flutter packages
-- `.cache/npm/` - npm packages  
-- `~/.Android/` - Android SDK
-
-Subsequent builds are 5-10x faster.
+| Component | Version | Configured in |
+|-----------|---------|---------------|
+| Kotlin | 2.1.0 | `android/settings.gradle`, `android/build.gradle` |
+| Gradle | 8.11.1 | `android/gradle/wrapper/gradle-wrapper.properties` |
+| AGP | 8.9.1 | `android/settings.gradle` |
+| NDK | 27.0.12077973 | Auto-downloaded by Gradle |

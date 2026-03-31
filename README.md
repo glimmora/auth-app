@@ -169,27 +169,28 @@ sudo apt-get install -y nodejs
 
 ## 📤 Build Outputs
 
-### Android
+### Android — ABI-split APKs
 ```
-flutter/build/outputs/android/
-├── app-armeabi-v7a-release.apk   # 32-bit ARM
-├── app-arm64-v8a-release.apk     # 64-bit ARM
-├── app-x86_64-release.apk        # 64-bit x86
-└── app-release.aab               # Play Store
-```
-
-### Linux
-```
-flutter/build/outputs/linux/authvault/
-└── authvault                     # Binary
+flutter/build/app/outputs/flutter-apk/
+├── app-armeabi-v7a-release.apk   # 32-bit ARM  (~22 MB)
+├── app-arm64-v8a-release.apk     # 64-bit ARM  (~26 MB)
+└── app-x86_64-release.apk        # 64-bit x86  (~28 MB)
 ```
 
-### Web
+### Web (Flutter PWA)
+```
+flutter/build/web/
+├── index.html
+├── main.dart.js
+├── flutter.js
+└── flutter_service_worker.js
+```
+
+### Web (React/Vite)
 ```
 web/dist/
 ├── index.html
-├── assets/
-└── sw.js                         # Service worker
+└── assets/
 ```
 
 ## ⚡ Cache Performance

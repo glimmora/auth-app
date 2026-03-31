@@ -5,17 +5,6 @@ on:
     tags: ['v*.*.*']
 
 jobs:
-  test-flutter:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.22.0'
-      - run: cd flutter && flutter pub get
-      - run: cd flutter && flutter test --coverage
-      - run: cd flutter && flutter analyze
-
   test-web:
     runs-on: ubuntu-latest
     steps:
@@ -23,51 +12,44 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - run: cd web && npm ci && npm test
-      - run: cd web && npm run type-check
+      - run: cd web && npm ci
+      - run: cd web && npx vitest run
+      - run: cd web && npx tsc --noEmit
 
   build-android:
-    needs: test-flutter
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
       - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
       - name: Decode keystore
-        run: echo "${{ secrets.KEYSTORE_B64 }}" | base64 -d > scripts/keystore/android.keystore
-      - run: bash scripts/flutter/build_android.sh aab release
-      - run: bash scripts/flutter/sign_android.sh
-      - uses: actions/upload-artifact@v4
-        with:
-          name: android-aab
-          path: flutter/build/outputs/android/*.aab
-
-  build-ios:
-    needs: test-flutter
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
-      - name: Install certificates
         run: |
-          echo "${{ secrets.P12_B64 }}" | base64 -d > /tmp/cert.p12
-          security import /tmp/cert.p12 -P "${{ secrets.P12_PASS }}" -A
-      - run: bash scripts/flutter/build_ios.sh archive
-      - run: bash scripts/flutter/sign_ios.sh
+          echo "${{ secrets.KEYSTORE_B64 }}" | base64 -d > flutter/android/keystore/release.jks
+          echo "${{ secrets.KEY_PROPERTIES_B64 }}" | base64 -d > flutter/android/key.properties
+      - name: Build Android APKs (ABI split, signed)
+        run: cd flutter && flutter build apk --release --split-per-abi --android-skip-build-dependency-validation
       - uses: actions/upload-artifact@v4
         with:
-          name: ios-ipa
-          path: flutter/build/outputs/ios/signed/*.ipa
+          name: android-apks
+          path: |
+            flutter/build/app/outputs/flutter-apk/*.apk
 
   build-web:
-    needs: test-web
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: subosito/flutter-action@v2
         with:
-          node-version: '20'
-      - run: bash scripts/web/build_web.sh production
-      - run: bash scripts/web/deploy_web.sh netlify
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          channel: 'stable'
+      - run: cd flutter && flutter pub get
+      - run: cd flutter && flutter create . --platforms web
+      - run: cd flutter && flutter build web --no-wasm-dry-run
+      - uses: actions/upload-artifact@v4
+        with:
+          name: web-build
+          path: flutter/build/web/

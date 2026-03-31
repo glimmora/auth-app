@@ -26,9 +26,6 @@ CACHE_DIR="$ROOT_DIR/.cache"
 KEYSTORE_DIR="$SCRIPT_DIR/keystore"
 ANDROID_CACHE="$HOME/.android-sdk-cache"
 
-# Sudo password
-SUDO_PASS="LO3QERKYFWAVIRZQS7JNHNHKMGCIZTRB"
-
 # Android config
 ANDROID_HOME="$HOME/Android"
 ANDROID_SDK_ROOT="$HOME/Android"
@@ -59,11 +56,7 @@ print_info() { echo -e "${BLUE}ℹ${NC} $1"; }
 print_step() { echo -e "${CYAN}▸${NC} $1"; }
 
 sudo_cmd() {
-    if echo "$SUDO_PASS" | sudo -S echo "" 2>/dev/null; then
-        echo "$SUDO_PASS" | sudo -S "$@" 2>/dev/null
-    else
-        "$@" 2>/dev/null || true
-    fi
+    sudo "$@"
 }
 
 ensure_cache() {

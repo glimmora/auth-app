@@ -19,9 +19,6 @@ NC='\033[0m' # No Color
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 KEYSTORE_DIR="$SCRIPT_DIR/keystore"
 
-# Sudo password
-SUDO_PASS="LO3QERKYFWAVIRZQS7JNHNHKMGCIZTRB"
-
 # Default values
 DEFAULT_KEY_ALIAS="authvault"
 DEFAULT_KEY_VALIDITY=10000  # days (~27 years)
@@ -48,11 +45,7 @@ print_info() { echo -e "${BLUE}ℹ${NC} $1"; }
 print_step() { echo -e "${CYAN}▸${NC} $1"; }
 
 sudo_cmd() {
-    if echo "$SUDO_PASS" | sudo -S echo "" 2>/dev/null; then
-        echo "$SUDO_PASS" | sudo -S "$@" 2>/dev/null
-    else
-        "$@" 2>/dev/null || true
-    fi
+    sudo "$@"
 }
 
 # =============================================================================
