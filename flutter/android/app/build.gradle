@@ -54,8 +54,8 @@ android {
     }
 
     signingConfigs {
-        if (hasKeystore) {
-            release {
+        release {
+            if (hasKeystore) {
                 keyAlias keystoreProperties['keyAlias']
                 keyPassword keystoreProperties['keyPassword']
                 storeFile file(keystoreProperties['storeFile'])
@@ -73,25 +73,25 @@ android {
         multiDexEnabled true
     }
 
-    buildTypes {
-        release {
-            if (hasKeystore) {
-                signingConfig signingConfigs.release
-            } else {
-                signingConfig signingConfigs.debug
-            }
-            minifyEnabled true
-            shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-        debug {
-            applicationIdSuffix '.debug'
-        }
-        profile {
-            applicationIdSuffix '.profile'
+    splits {
+        abi {
+            enable true
+            reset()
+            include "armeabi-v7a", "arm64-v8a", "x86_64"
+            universalApk true
         }
     }
 
+    buildTypes {
+        release {
+            signingConfig hasKeystore ? signingConfigs.release : signingConfigs.debug
+            minifyEnabled false
+            shrinkResources false
+        }
+        debug {
+            signingConfig signingConfigs.debug
+        }
+    }
 }
 
 flutter {

@@ -95,7 +95,7 @@ class Settings extends Table {
 }
 
 /// Audit log table - tracks security-relevant actions
-class AuditLog extends Table {
+class AuditLogs extends Table {
   /// Primary key (auto-increment)
   IntColumn get id => integer().autoIncrement()();
 

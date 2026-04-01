@@ -12,7 +12,7 @@ part 'app_database.g.dart';
 /// Main application database
 ///
 /// Uses SQLite via drift with full encryption at rest
-@DriftDatabase(tables: [Accounts, Groups, Settings, AuditLog])
+@DriftDatabase(tables: [Accounts, Groups, Settings, AuditLogs])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
@@ -146,8 +146,8 @@ class AppDatabase extends _$AppDatabase {
   }
 
   // Audit log queries
-  Future<List<AuditLogData>> getAuditLog({int limit = 100}) {
-    return (select(auditLog)
+  Future<List<AuditLog>> getAuditLog({int limit = 100}) {
+    return (select(auditLogs)
           ..orderBy([
             (t) => OrderingTerm.desc(t.timestamp),
           ])
@@ -157,8 +157,8 @@ class AppDatabase extends _$AppDatabase {
 
   Future<void> logAction(String action,
       {String? accountUuid, String? details}) {
-    return into(auditLog).insert(
-      AuditLogCompanion(
+    return into(auditLogs).insert(
+      AuditLogsCompanion(
         action: Value(action),
         accountUuid: Value(accountUuid),
         details: Value(details),
@@ -168,7 +168,7 @@ class AppDatabase extends _$AppDatabase {
   }
 
   Future<void> clearAuditLog() {
-    return delete(auditLog).go();
+    return delete(auditLogs).go();
   }
 }
 
