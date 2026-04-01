@@ -11,6 +11,11 @@ Automation scripts for building, testing, and deploying AuthVault with intellige
 # Build Android app (split APKs + AAB, signed if keystore exists)
 ./scripts/build.sh android
 
+# Platform-specific builds
+./scripts/build_android.sh              # Android only
+./scripts/build_ubuntu.sh               # Linux/Ubuntu only
+./scripts/build_web.sh                  # Web only
+
 # Run full pipeline: fix → test → build
 ./scripts/run.sh all linux
 
@@ -45,24 +50,47 @@ Automation scripts for building, testing, and deploying AuthVault with intellige
 
 ---
 
-### 2. build.sh
-**Purpose:** Build for all platforms (builds cached)
+### 2. build.sh (Wrapper)
+**Purpose:** Unified entry point for all platform builds
 
 ```bash
 ./scripts/build.sh all                  # Build all platforms
 ./scripts/build.sh android              # Android (split APKs + AAB)
 ./scripts/build.sh android release      # Android release build
-./scripts/build.sh android debug true   # Android debug with split
-./scripts/build.sh linux                # Linux desktop
+./scripts/build.sh android debug        # Android debug build
+./scripts/build.sh android release nosplit  # Universal APK
+./scripts/build.sh ubuntu               # Linux/Ubuntu desktop
+./scripts/build.sh ubuntu release package  # Ubuntu with AppImage/DEB
+./scripts/build.sh windows              # Windows desktop
 ./scripts/build.sh web                  # Web PWA
+./scripts/build.sh web release /        # Web with base URL
+```
+
+**Platform-specific Scripts:**
+
+For more control, use individual platform scripts:
+
+```bash
+# Android (split APKs + AAB)
+./scripts/build_android.sh [release|debug] [split|nosplit]
+
+# Ubuntu/Linux (desktop app + optional AppImage/DEB)
+./scripts/build_ubuntu.sh [release|debug] [package|appimage|deb]
+
+# Windows (desktop exe + optional installer/MSIX)
+./scripts/build_windows.sh [release|debug] [installer|msix]
+
+# Web (PWA + optional deploy config)
+./scripts/build_web.sh [release|debug] [base-url] [firebase|github|netlify]
 ```
 
 **Android Output:**
 ```
-flutter/build/outputs/android/
+dist/android/
 ├── app-armeabi-v7a-release.apk    # 32-bit ARM
 ├── app-arm64-v8a-release.apk      # 64-bit ARM (modern phones)
 ├── app-x86_64-release.apk         # 64-bit x86 (emulators)
+├── app-release.apk                # Universal APK
 └── app-release.aab                # Google Play bundle
 ```
 

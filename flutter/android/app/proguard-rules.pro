@@ -26,6 +26,12 @@
 # Keep models
 -keep class app.authvault.** { *; }
 
+# Google Play Core / Feature Delivery
+-keep class com.google.android.play.core.** { *; }
+-keep class com.google.android.finsky.** { *; }
+-dontwarn com.google.android.play.core.**
+-dontwarn com.google.android.finsky.**
+
 # General Android rules
 -dontwarn kotlin.**
 -keep class kotlin.** { *; }
