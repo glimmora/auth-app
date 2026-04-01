@@ -1,27 +1,36 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:local_auth/local_auth.dart';
 
+import '../../../core/providers/providers.dart';
+
 /// Lock screen - PIN and biometric authentication
-class LockScreen extends StatefulWidget {
+class LockScreen extends ConsumerStatefulWidget {
   const LockScreen({super.key});
 
   @override
-  State<LockScreen> createState() => _LockScreenState();
+  ConsumerState<LockScreen> createState() => _LockScreenState();
 }
 
-class _LockScreenState extends State<LockScreen> {
+class _LockScreenState extends ConsumerState<LockScreen> {
   final _pinController = TextEditingController(text: '');
   final _focusNode = FocusNode();
   bool _showError = false;
   int _failedAttempts = 0;
   bool _isLockedOut = false;
   int _lockoutSeconds = 0;
+  bool _isAuthenticating = false;
 
   final LocalAuthentication _localAuth = LocalAuthentication();
   bool _canCheckBiometrics = false;
   bool _hasBiometrics = false;
+  bool _hasBiometricsEnrolled = false;
 
   @override
   void initState() {
@@ -35,6 +44,7 @@ class _LockScreenState extends State<LockScreen> {
       _canCheckBiometrics = await _localAuth.canCheckBiometrics;
       if (_canCheckBiometrics) {
         _hasBiometrics = await _localAuth.isDeviceSupported();
+        _hasBiometricsEnrolled = await _localAuth.canCheckBiometrics;
       }
     } catch (e) {
       _canCheckBiometrics = false;
@@ -42,6 +52,12 @@ class _LockScreenState extends State<LockScreen> {
   }
 
   Future<void> _authenticateWithBiometrics() async {
+    if (_isAuthenticating) return;
+
+    setState(() {
+      _isAuthenticating = true;
+    });
+
     try {
       final didAuthenticate = await _localAuth.authenticate(
         localizedReason: 'Authenticate to unlock AuthVault',
@@ -52,36 +68,88 @@ class _LockScreenState extends State<LockScreen> {
       );
 
       if (didAuthenticate && mounted) {
-        _handleSuccess();
+        await _unlock();
+      } else if (mounted) {
+        setState(() {
+          _showError = true;
+          _errorMessage = 'Authentication cancelled';
+        });
       }
     } catch (e) {
       if (mounted) {
-        _showError = true;
-        setState(() {});
+        setState(() {
+          _showError = true;
+          _errorMessage = 'Biometric error: $e';
+        });
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isAuthenticating = false;
+        });
       }
     }
   }
 
-  void _handlePinSubmit() {
+  String _errorMessage = '';
+
+  void _handlePinSubmit() async {
     final pin = _pinController.text;
 
-    // In production, verify against stored hash
-    if (pin == '1234') {
-      // Placeholder
-      _handleSuccess();
-    } else {
+    if (pin.isEmpty) {
+      setState(() {
+        _showError = true;
+        _errorMessage = 'Please enter your PIN';
+      });
+      return;
+    }
+
+    setState(() {
+      _isAuthenticating = true;
+      _showError = false;
+    });
+
+    try {
+      final settings = ref.read(settingsProvider);
+      if (settings.pinHash == null || settings.pinSalt == null) {
+        throw Exception('PIN not set');
+      }
+      final hash = _hashPin(pin, settings.pinSalt!);
+      
+      if (hash == settings.pinHash) {
+        await _unlock();
+      } else {
+        throw Exception('Invalid PIN');
+      }
+    } catch (e) {
       _failedAttempts++;
-      _showError = true;
       _pinController.clear();
 
       if (_failedAttempts >= 5) {
         _isLockedOut = true;
-        _lockoutSeconds =
-            30 * (1 << (_failedAttempts - 5)); // Exponential backoff
+        _lockoutSeconds = 30 * (1 << (_failedAttempts - 5));
         _startLockoutTimer();
       }
 
-      setState(() {});
+      setState(() {
+        _isAuthenticating = false;
+        _showError = true;
+        _errorMessage = 'Incorrect PIN. $_failedAttempts attempts.';
+      });
+    }
+  }
+
+  Future<void> _unlock() async {
+    // Log audit event
+    final db = ref.read(databaseProvider);
+    await db.logAction('UNLOCK', details: 'PIN authentication successful');
+
+    // Reset failed attempts
+    _failedAttempts = 0;
+
+    // Navigate to home
+    if (mounted) {
+      context.go('/home');
     }
   }
 
@@ -96,17 +164,18 @@ class _LockScreenState extends State<LockScreen> {
     });
   }
 
-  void _handleSuccess() {
-    // Log audit event
-    // Reset failed attempts
-    // Navigate to home
-    if (mounted) {
-      context.go('/home');
-    }
+  String _hashPin(String pin, Uint8List salt) {
+    final saltedPin = Uint8List.fromList(
+      [...salt, ...utf8.encode(pin)],
+    );
+    return sha256.convert(saltedPin).toString();
   }
 
   @override
   Widget build(BuildContext context) {
+    final settings = ref.watch(settingsProvider);
+    final biometricEnabled = settings.biometricEnabled && _hasBiometricsEnrolled;
+
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -155,11 +224,11 @@ class _LockScreenState extends State<LockScreen> {
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.error, color: Colors.white),
+                      const Icon(Icons.error, color: Colors.white, size: 20),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          'Incorrect PIN. $_failedAttempts attempts.',
+                          _errorMessage,
                           style: const TextStyle(color: Colors.white),
                         ),
                       ),
@@ -221,8 +290,7 @@ class _LockScreenState extends State<LockScreen> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide:
-                          const BorderSide(color: Colors.blue, width: 2),
+                      borderSide: const BorderSide(color: Colors.blue, width: 2),
                     ),
                     errorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -243,29 +311,41 @@ class _LockScreenState extends State<LockScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: _handlePinSubmit,
+                    onPressed: _isAuthenticating ? null : _handlePinSubmit,
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: const Text(
-                      'Unlock',
-                      style: TextStyle(fontSize: 16),
-                    ),
+                    child: _isAuthenticating
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Text(
+                            'Unlock',
+                            style: TextStyle(fontSize: 16),
+                          ),
                   ),
                 ),
 
               const SizedBox(height: 16),
 
               // Biometric button
-              if (_hasBiometrics && !_isLockedOut)
+              if (biometricEnabled && !_isLockedOut && !_isAuthenticating)
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton.icon(
                     onPressed: _authenticateWithBiometrics,
-                    icon: const Icon(Icons.fingerprint),
+                    icon: _isAuthenticating
+                        ? const SizedBox(
+                            height: 16,
+                            width: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(Icons.fingerprint),
                     label: const Text('Use Biometrics'),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
@@ -281,16 +361,48 @@ class _LockScreenState extends State<LockScreen> {
               // Forgot PIN
               TextButton(
                 onPressed: () {
-                  // Show reset dialog
+                  _showResetDialog();
                 },
                 child: Text(
                   'Forgot PIN?',
                   style: TextStyle(color: Colors.grey[500]),
                 ),
               ),
+
+              // Bottom padding for navigation bar
+              const SizedBox(height: 16),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  void _showResetDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Reset PIN'),
+        content: const Text(
+          'If you forgot your PIN, you\'ll need to reset the app. This will delete all accounts. Make sure you have a backup!',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              // Reset app
+              Navigator.pop(context);
+              // Clear all data and redirect to setup
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+            ),
+            child: const Text('Reset'),
+          ),
+        ],
       ),
     );
   }

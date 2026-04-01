@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 
 import 'core/router/app_router.dart';
+import 'core/providers/providers.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,10 +16,10 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
 
-  // Enable edge-to-edge display
+  // Enable edge-to-edge display with proper system bar handling
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
-  // Set system bar style
+  // Set system bar style - transparent status bar, visible navigation bar
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
     statusBarIconBrightness: Brightness.light,

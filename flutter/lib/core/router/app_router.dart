@@ -11,19 +11,16 @@ import '../../features/auth_lock/presentation/pin_setup_screen.dart';
 import '../../features/settings/presentation/settings_screen.dart';
 import '../../features/settings/presentation/time_offset_screen.dart';
 import '../../features/backup/presentation/backup_screen.dart';
+import '../providers/providers.dart' as providers;
 
 /// Creates the app router with all routes configured
 GoRouter createRouter(WidgetRef ref) {
+  final lockState = ref.watch(providers.lockStateProvider);
+  
   return GoRouter(
-    initialLocation: '/lock',
+    initialLocation: _getInitialLocation(lockState),
     debugLogDiagnostics: false,
     routes: [
-      // Splash screen
-      GoRoute(
-        path: '/',
-        builder: (context, state) => const SplashScreen(),
-      ),
-
       // Lock screen
       GoRoute(
         path: '/lock',
@@ -78,19 +75,36 @@ GoRouter createRouter(WidgetRef ref) {
         builder: (context, state) => const BackupScreen(),
       ),
     ],
+    redirect: (context, state) {
+      final currentLockState = ref.read(providers.lockStateProvider);
+      final isGoingToSetup = state.matchedLocation == '/lock/setup';
+      final isGoingToLock = state.matchedLocation == '/lock';
+      
+      if (currentLockState == providers.LockState.setupRequired && !isGoingToSetup) {
+        return '/lock/setup';
+      }
+      
+      if (currentLockState == providers.LockState.locked && !isGoingToLock) {
+        return '/lock';
+      }
+      
+      if (currentLockState == providers.LockState.unlocked && 
+          (isGoingToSetup || isGoingToLock)) {
+        return '/home';
+      }
+      
+      return null;
+    },
   );
 }
 
-/// Splash screen
-class SplashScreen extends StatelessWidget {
-  const SplashScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: CircularProgressIndicator(),
-      ),
-    );
+String _getInitialLocation(providers.LockState state) {
+  switch (state) {
+    case providers.LockState.setupRequired:
+      return '/lock/setup';
+    case providers.LockState.locked:
+      return '/lock';
+    case providers.LockState.unlocked:
+      return '/home';
   }
 }

@@ -75,3 +75,6 @@ class OTPProgressRing extends StatelessWidget {
     }
   }
 }
+
+// Alias for consistency
+typedef OtpProgressRing = OTPProgressRing;
