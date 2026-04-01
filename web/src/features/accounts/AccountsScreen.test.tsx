@@ -13,7 +13,9 @@ vi.mock('react-router-dom', async () => {
 });
 
 const mockLoadAccounts = vi.fn();
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mockStore: any = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   accounts: [] as any[],
   loading: false,
   globalTimeOffset: 0,
@@ -30,6 +32,7 @@ vi.mock('@/features/accounts/store', () => ({
 }));
 
 vi.mock('@/features/accounts/AccountCard', () => ({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   AccountCard: ({ account }: any) => (
     <div data-testid="account-card">{account.issuer}</div>
   ),

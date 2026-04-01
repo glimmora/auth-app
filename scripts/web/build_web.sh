@@ -2,16 +2,19 @@
 # =============================================================================
 # AuthVault Web — Production Build Script
 # Usage: ./build_web.sh [staging|production]
+# Outputs: auth-app/dist/web/
 # =============================================================================
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 WEB_DIR="$ROOT/web"
-OUTPUT_DIR="$WEB_DIR/dist"
+DIST_DIR="$ROOT/dist/web"
 ENV="${1:-production}"
 ENV_FILE="$ROOT/scripts/env/.env.web"
 
-set -a; source "$ENV_FILE"; set +a
+if [[ -f "$ENV_FILE" ]]; then
+  set -a; source "$ENV_FILE"; set +a
+fi
 
 cd "$WEB_DIR"
 
@@ -22,20 +25,20 @@ echo ">>> Type checking..."
 npx tsc --noEmit
 
 echo ">>> Linting..."
-npx eslint src --max-warnings 0
+npx eslint 'src/**/*.{ts,tsx}' --max-warnings 0
 
 echo ">>> Running unit tests..."
 npx vitest run
 
 echo ">>> Building for $ENV..."
 if [[ "$ENV" == "production" ]]; then
-  VITE_APP_ENV=production npx vite build
+  VITE_APP_ENV=production npx vite build --outDir "$DIST_DIR"
 else
-  VITE_APP_ENV=staging npx vite build --mode staging
+  VITE_APP_ENV=staging npx vite build --mode staging --outDir "$DIST_DIR"
 fi
 
 echo ">>> Build stats:"
-du -sh "$OUTPUT_DIR"
-find "$OUTPUT_DIR" -name "*.js" | head -10
+du -sh "$DIST_DIR"
+find "$DIST_DIR" -name "*.js" | head -10
 
-echo "✅ Web build complete: $OUTPUT_DIR"
+echo "✅ Web build complete: $DIST_DIR"

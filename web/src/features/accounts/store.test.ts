@@ -208,6 +208,7 @@ describe('Account Store', () => {
 
   it('handles loadAccounts failure gracefully', async () => {
     const { getAllAccounts } = await import('@/core/db/schema');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (getAllAccounts as any).mockRejectedValueOnce(new Error('DB error'));
 
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});

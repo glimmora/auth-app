@@ -23,6 +23,7 @@ FLUTTER_DIR="$ROOT_DIR/flutter"
 WEB_DIR="$ROOT_DIR/web"
 CACHE_DIR="$ROOT_DIR/.cache"
 KEYSTORE_DIR="$SCRIPT_DIR/keystore"
+DIST_DIR="$ROOT_DIR/dist"
 
 # Android config
 ANDROID_HOME="$HOME/Android"
@@ -95,7 +96,7 @@ run_build() {
 run_linux() {
     print_step "Running Linux app..."
     
-    local output="$FLUTTER_DIR/build/outputs/linux/authvault"
+    local output="$DIST_DIR/linux/authvault"
     
     if [ -f "$output/authvault" ]; then
         print_info "Starting: $output/authvault"

@@ -30,6 +30,7 @@ export function useTOTP(account: Account, globalOffset: number = 0): TOTPState {
     const interval = setInterval(computeAndSet, 1000);
 
     return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account.uuid, account.period, globalOffset, account.timeOffset]);
 
   return state;
@@ -43,6 +44,7 @@ function computeState(account: Account, globalOffset: number): TOTPState {
     secret: 'JBSWY3DPEHPK3PXP', // Placeholder - would decrypt from account.encryptedPayload
     digits: account.digits,
     period,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     algorithm: account.algorithm as any,
     offset: totalOffset,
   });
@@ -51,6 +53,7 @@ function computeState(account: Account, globalOffset: number): TOTPState {
     secret: 'JBSWY3DPEHPK3PXP',
     digits: account.digits,
     period,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     algorithm: account.algorithm as any,
     offset: totalOffset,
   });

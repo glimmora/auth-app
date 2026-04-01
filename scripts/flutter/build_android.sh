@@ -2,15 +2,15 @@
 # =============================================================================
 # AuthVault — Android Build Script
 # Usage: ./build_android.sh [apk|aab|both] [debug|profile|release]
+# Outputs: auth-app/dist/android/
 # =============================================================================
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 FLUTTER_DIR="$ROOT/flutter"
-OUTPUT_DIR="$FLUTTER_DIR/build/outputs/android"
+OUTPUT_DIR="$ROOT/dist/android"
 ENV_FILE="$ROOT/scripts/env/.env.android"
 
-# Load env
 if [[ -f "$ENV_FILE" ]]; then
   set -a; source "$ENV_FILE"; set +a
 fi

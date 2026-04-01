@@ -1,18 +1,30 @@
-name: AuthVault Release
+name: AuthVault Deploy
 
 on:
-  push:
-    tags: ['v*.*.*']
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        type: choice
+        options:
+          - staging
+          - production
+        default: staging
 
-permissions:
-  contents: write
+  push:
+    branches: [main]
+
+concurrency:
+  group: deploy-${{ github.event.inputs.environment || 'staging' }}
+  cancel-in-progress: false
 
 jobs:
   # =========================================================================
-  # Web: Test + Build
+  # Web Tests (gate before deploy)
   # =========================================================================
-  web-release:
-    name: Web — Test & Build
+  web-test:
+    name: Web — Lint & Test
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -38,7 +50,56 @@ jobs:
       - name: Run tests
         run: npx vitest run
 
-      - name: Build
+  # =========================================================================
+  # Flutter Tests (gate before deploy)
+  # =========================================================================
+  flutter-test:
+    name: Flutter — Analyze & Test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: flutter
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run code generation
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Analyze
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings
+
+      - name: Run tests
+        run: flutter test --coverage
+
+  # =========================================================================
+  # Build: Web
+  # =========================================================================
+  build-web:
+    name: Build — Web
+    needs: web-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install dependencies
+        working-directory: web
+        run: npm ci
+
+      - name: Build web
+        working-directory: web
         run: npm run build -- --outDir ../dist/web
 
       - uses: actions/upload-artifact@v4
@@ -47,10 +108,11 @@ jobs:
           path: dist/web/
 
   # =========================================================================
-  # Flutter: Analyze + Test + Android Build
+  # Build: Android
   # =========================================================================
-  flutter-release:
-    name: Flutter — Test & Android Build
+  build-android:
+    name: Build — Android
+    needs: flutter-test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -72,14 +134,6 @@ jobs:
         working-directory: flutter
         run: dart run build_runner build --delete-conflicting-outputs
 
-      - name: Analyze
-        working-directory: flutter
-        run: flutter analyze --no-fatal-infos --no-fatal-warnings
-
-      - name: Run tests
-        working-directory: flutter
-        run: flutter test
-
       - name: Setup signing (if keystore secret exists)
         run: |
           if [ -n "${{ secrets.KEYSTORE_B64 }}" ]; then
@@ -93,7 +147,7 @@ jobs:
             echo "No keystore secret — building unsigned"
           fi
 
-      - name: Build Android APKs (release, split per ABI)
+      - name: Build APKs (release, split per ABI)
         working-directory: flutter
         run: |
           if [ -f "../scripts/keystore/authvault.keystore" ]; then
@@ -133,11 +187,11 @@ jobs:
           path: dist/android/
 
   # =========================================================================
-  # GitHub Release
+  # Assemble: Combine all artifacts into dist/
   # =========================================================================
-  github-release:
-    name: Create GitHub Release
-    needs: [web-release, flutter-release]
+  assemble:
+    name: Assemble — dist/
+    needs: [build-web, build-android]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -152,17 +206,13 @@ jobs:
           name: dist-android
           path: dist/android/
 
-      - name: Prepare release assets
+      - name: Show dist/ contents
         run: |
-          mkdir -p release-assets
-          cp dist/android/*-*.apk release-assets/ 2>/dev/null || true
-          cp dist/android/*.aab release-assets/ 2>/dev/null || true
-          cd dist/web && tar -czf ../../release-assets/authvault-web.tar.gz . && cd ../..
-          echo "Release assets:"
-          ls -lh release-assets/
+          echo "=== dist/ structure ==="
+          find dist/ -type f | sort
 
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+      - uses: actions/upload-artifact@v4
         with:
-          generate_release_notes: true
-          files: release-assets/*
+          name: authvault-dist
+          path: dist/
+          retention-days: 30

@@ -2,12 +2,13 @@
 # =============================================================================
 # AuthVault — Linux Build Script
 # Produces: ELF binary + .deb + .rpm + AppImage
+# Outputs: auth-app/dist/linux/
 # =============================================================================
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 FLUTTER_DIR="$ROOT/flutter"
-OUTPUT_DIR="$FLUTTER_DIR/build/outputs/linux"
+OUTPUT_DIR="$ROOT/dist/linux"
 
 mkdir -p "$OUTPUT_DIR"
 cd "$FLUTTER_DIR"
