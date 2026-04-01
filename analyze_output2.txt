@@ -1,0 +1,28 @@
+﻿Analyzing flutter...                                            
+
+warning - Unused import: 'package:convert/convert.dart' - lib\core\crypto\aes_gcm.dart:5:8 - unused_import
+  error - The getter 'ciphertext' isn't defined for the type 'SecretBox' - lib\core\crypto\aes_gcm.dart:36:41 - undefined_getter
+   info - The constant name 'SHA1' isn't a lowerCamelCase identifier - lib\core\crypto\hotp_engine.dart:113:21 - constant_identifier_names
+   info - The constant name 'SHA256' isn't a lowerCamelCase identifier - lib\core\crypto\hotp_engine.dart:113:27 - constant_identifier_names
+   info - The constant name 'SHA512' isn't a lowerCamelCase identifier - lib\core\crypto\hotp_engine.dart:113:35 - constant_identifier_names
+warning - Unused import: 'dart:convert' - lib\core\crypto\steam_guard.dart:2:8 - unused_import
+warning - Unused import: 'totp_engine.dart' - lib\core\crypto\steam_guard.dart:5:8 - unused_import
+   info - The constant name 'SHA1' isn't a lowerCamelCase identifier - lib\core\crypto\totp_engine.dart:151:21 - constant_identifier_names
+   info - The constant name 'SHA256' isn't a lowerCamelCase identifier - lib\core\crypto\totp_engine.dart:151:27 - constant_identifier_names
+   info - The constant name 'SHA512' isn't a lowerCamelCase identifier - lib\core\crypto\totp_engine.dart:151:35 - constant_identifier_names
+  error - A value of type 'Future<List<AuditLogData>>' can't be returned from the method 'getAuditLog' because it has a return type of 'Future<List<AuditLog>>' - lib\core\database\app_database.dart:150:12 - return_of_invalid_type
+  error - There's no constant named 'blackAndWhite' in 'FlexScheme' - lib\core\theme\app_theme.dart:47:26 - undefined_enum_constant
+warning - The value of the field '_key' isn't used - lib\core\time\time_offset.dart:8:16 - unused_field
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\accounts\presentation\scan_qr_screen.dart:165:30 - deprecated_member_use
+   info - Dependencies not sorted alphabetically - pubspec.yaml:18:3 - sort_pub_dependencies
+   info - Dependencies not sorted alphabetically - pubspec.yaml:81:3 - sort_pub_dependencies
+
+flutter : 16 issues found. (ran in 11.3s)
+At line:1 char:1
++ flutter analyze 2>&1 | Out-File -FilePath 
+"C:\dev\auth-app\analyze_ou ...
++ ~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (16 issues found.  
+   (ran in 11.3s):String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
