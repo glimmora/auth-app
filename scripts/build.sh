@@ -24,9 +24,7 @@ FLUTTER_DIR="$ROOT_DIR/flutter"
 WEB_DIR="$ROOT_DIR/web"
 CACHE_DIR="$ROOT_DIR/.cache"
 KEYSTORE_DIR="$SCRIPT_DIR/keystore"
-
-# Sudo password
-SUDO_PASS="LO3QERKYFWAVIRZQS7JNHNHKMGCIZTRB"
+DIST_DIR="$ROOT_DIR/dist"
 
 # Android config - check multiple locations
 ANDROID_HOME="${ANDROID_HOME:-$HOME/Android}"
@@ -69,11 +67,7 @@ print_info() { echo -e "${BLUE}ℹ${NC} $1"; }
 print_step() { echo -e "${CYAN}▸${NC} $1"; }
 
 sudo_cmd() {
-    if echo "$SUDO_PASS" | sudo -S echo "" 2>/dev/null; then
-        echo "$SUDO_PASS" | sudo -S "$@" 2>/dev/null
-    else
-        "$@" 2>/dev/null || true
-    fi
+    sudo "$@"
 }
 
 ensure_cache() {
@@ -159,7 +153,7 @@ prepare() {
 
 build_linux() {
     local flavor="${1:-release}"
-    local output="$FLUTTER_DIR/build/outputs/linux"
+    local output="$DIST_DIR/linux"
     
     print_step "Building Linux ($flavor)..."
     
@@ -188,7 +182,7 @@ build_linux() {
 
 build_windows() {
     local flavor="${1:-release}"
-    local output="$FLUTTER_DIR/build/outputs/windows"
+    local output="$DIST_DIR/windows"
     
     print_step "Building Windows ($flavor)..."
     
@@ -225,7 +219,7 @@ build_windows() {
 build_android() {
     local flavor="${1:-release}"
     local split="${2:-true}"
-    local output="$FLUTTER_DIR/build/outputs/android"
+    local output="$DIST_DIR/android"
     
     print_step "Building Android ($flavor)..."
     
@@ -298,8 +292,10 @@ build_web() {
         return 0
     }
     
+    local web_dist="$DIST_DIR/web"
+    
     # Check cache
-    if [ -d "dist" ] && [ -n "$(ls -A dist 2>/dev/null)" ]; then
+    if [ -d "$web_dist" ] && [ -n "$(ls -A "$web_dist" 2>/dev/null)" ]; then
         print_status "Web build cached"
         log_result "web" "CACHED"
         return 0
@@ -316,8 +312,8 @@ build_web() {
     
     # Build with npm run build
     print_step "Running npm run build..."
-    if npm run build 2>&1 | tee /tmp/build-web.log; then
-        print_status "Web: $WEB_DIR/dist"
+    if npm run build -- --outDir "$web_dist" 2>&1 | tee /tmp/build-web.log; then
+        print_status "Web: $web_dist"
         log_result "web" "OK"
     else
         log_result "web" "FAILED"

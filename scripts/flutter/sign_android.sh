@@ -8,8 +8,13 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 SCRIPTS_DIR="$ROOT/scripts"
 FLUTTER_DIR="$ROOT/flutter"
-OUTPUT_DIR="$FLUTTER_DIR/build/outputs/android"
+OUTPUT_DIR="$ROOT/dist/android"
 ENV_FILE="$SCRIPTS_DIR/env/.env.android"
+
+if [[ ! -f "$ENV_FILE" ]]; then
+  echo "ERROR: $ENV_FILE not found. Copy .env.android.example to .env.android and configure."
+  exit 1
+fi
 
 set -a; source "$ENV_FILE"; set +a
 

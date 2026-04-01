@@ -63,7 +63,7 @@ export const useAccountStore = create<AccountStore>()(
     },
 
     reorderAccounts: async (from, to) => {
-      const { reorderAccounts, getAllAccounts } = await import('@/core/db/schema');
+      const { reorderAccounts } = await import('@/core/db/schema');
       const accounts = get().accounts;
       const [removed] = accounts.splice(from, 1);
       accounts.splice(to, 0, removed);

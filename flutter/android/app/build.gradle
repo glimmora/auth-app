@@ -22,6 +22,7 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
+<<<<<<< HEAD
 // Load keystore properties
 def keystorePropertiesFile = rootProject.file('../../../scripts/keystore/keystore.properties')
 def keystoreProperties = new Properties()
@@ -32,12 +33,21 @@ if (keystorePropertiesFile.exists()) {
         keystoreProperties.load(reader)
     }
     hasKeystore = true
+=======
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file('key.properties')
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+>>>>>>> babb3b59814fd1012c5cb601c2dd89a61feb6d50
 }
 
 android {
     namespace "app.authvault.android"
     compileSdk 35
+<<<<<<< HEAD
     ndkVersion "27.2.12479018"
+=======
+>>>>>>> babb3b59814fd1012c5cb601c2dd89a61feb6d50
 
     compileOptions {
         coreLibraryDesugaringEnabled true
@@ -66,30 +76,59 @@ android {
 
     defaultConfig {
         applicationId "app.authvault.android"
+<<<<<<< HEAD
         minSdkVersion flutter.minSdkVersion
+=======
+        minSdk 26
+>>>>>>> babb3b59814fd1012c5cb601c2dd89a61feb6d50
         targetSdk 35
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true
     }
 
+<<<<<<< HEAD
     splits {
         abi {
             enable true
             reset()
             include "armeabi-v7a", "arm64-v8a", "x86_64"
             universalApk true
+=======
+    signingConfigs {
+        release {
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
+            storePassword keystoreProperties['storePassword']
+>>>>>>> babb3b59814fd1012c5cb601c2dd89a61feb6d50
         }
     }
 
     buildTypes {
         release {
+<<<<<<< HEAD
             signingConfig hasKeystore ? signingConfigs.release : signingConfigs.debug
             minifyEnabled false
             shrinkResources false
+=======
+            signingConfig signingConfigs.release
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+>>>>>>> babb3b59814fd1012c5cb601c2dd89a61feb6d50
         }
         debug {
             signingConfig signingConfigs.debug
+        }
+    }
+
+    splits {
+        abi {
+            enable true
+            reset()
+            include 'armeabi-v7a', 'arm64-v8a', 'x86_64'
+            universalApk false
         }
     }
 }

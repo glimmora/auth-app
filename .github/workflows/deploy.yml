@@ -1,0 +1,218 @@
+name: AuthVault Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        type: choice
+        options:
+          - staging
+          - production
+        default: staging
+
+  push:
+    branches: [main]
+
+concurrency:
+  group: deploy-${{ github.event.inputs.environment || 'staging' }}
+  cancel-in-progress: false
+
+jobs:
+  # =========================================================================
+  # Web Tests (gate before deploy)
+  # =========================================================================
+  web-test:
+    name: Web — Lint & Test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type-check
+        run: npx tsc --noEmit
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Run tests
+        run: npx vitest run
+
+  # =========================================================================
+  # Flutter Tests (gate before deploy)
+  # =========================================================================
+  flutter-test:
+    name: Flutter — Analyze & Test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: flutter
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run code generation
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Analyze
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings
+
+      - name: Run tests
+        run: flutter test --coverage
+
+  # =========================================================================
+  # Build: Web
+  # =========================================================================
+  build-web:
+    name: Build — Web
+    needs: web-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install dependencies
+        working-directory: web
+        run: npm ci
+
+      - name: Build web
+        working-directory: web
+        run: npm run build -- --outDir ../dist/web
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist-web
+          path: dist/web/
+
+  # =========================================================================
+  # Build: Android
+  # =========================================================================
+  build-android:
+    name: Build — Android
+    needs: flutter-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Install dependencies
+        working-directory: flutter
+        run: flutter pub get
+
+      - name: Run code generation
+        working-directory: flutter
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Setup signing (if keystore secret exists)
+        run: |
+          if [ -n "${{ secrets.KEYSTORE_B64 }}" ]; then
+            mkdir -p scripts/keystore
+            echo "${{ secrets.KEYSTORE_B64 }}" | base64 -d > scripts/keystore/authvault.keystore
+            if [ -n "${{ secrets.KEY_PROPERTIES_B64 }}" ]; then
+              echo "${{ secrets.KEY_PROPERTIES_B64 }}" | base64 -d > flutter/android/key.properties
+            fi
+            echo "Keystore configured"
+          else
+            echo "No keystore secret — building unsigned"
+          fi
+
+      - name: Build APKs (release, split per ABI)
+        working-directory: flutter
+        run: |
+          if [ -f "../scripts/keystore/authvault.keystore" ]; then
+            PASS=$(cat ../scripts/keystore/.keystore_pass 2>/dev/null || echo "")
+            flutter build apk --release --split-per-abi \
+              -PstoreFile=../scripts/keystore/authvault.keystore \
+              -PstorePassword="$PASS" \
+              -PkeyAlias=authvault \
+              -PkeyPassword="$PASS"
+          else
+            flutter build apk --release --split-per-abi
+          fi
+
+      - name: Build AAB
+        working-directory: flutter
+        run: |
+          if [ -f "../scripts/keystore/authvault.keystore" ]; then
+            PASS=$(cat ../scripts/keystore/.keystore_pass 2>/dev/null || echo "")
+            flutter build appbundle --release \
+              -PstoreFile=../scripts/keystore/authvault.keystore \
+              -PstorePassword="$PASS" \
+              -PkeyAlias=authvault \
+              -PkeyPassword="$PASS"
+          else
+            flutter build appbundle --release
+          fi
+
+      - name: Copy outputs to dist
+        run: |
+          mkdir -p dist/android
+          cp flutter/build/app/outputs/flutter-apk/*-*.apk dist/android/ 2>/dev/null || true
+          cp flutter/build/app/outputs/bundle/release/*.aab dist/android/ 2>/dev/null || true
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist-android
+          path: dist/android/
+
+  # =========================================================================
+  # Assemble: Combine all artifacts into dist/
+  # =========================================================================
+  assemble:
+    name: Assemble — dist/
+    needs: [build-web, build-android]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist-web
+          path: dist/web/
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist-android
+          path: dist/android/
+
+      - name: Show dist/ contents
+        run: |
+          echo "=== dist/ structure ==="
+          find dist/ -type f | sort
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: authvault-dist
+          path: dist/
+          retention-days: 30

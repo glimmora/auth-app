@@ -70,7 +70,7 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
           children: [
             // Account Type
             DropdownButtonFormField<String>(
-              initialValue: _accountType,
+              value: _accountType,
               decoration: const InputDecoration(
                 labelText: 'Account Type',
                 border: OutlineInputBorder(),
@@ -174,7 +174,7 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
 
               // Algorithm
               DropdownButtonFormField<String>(
-                initialValue: _algorithm,
+                value: _algorithm,
                 decoration: const InputDecoration(
                   labelText: 'Algorithm',
                   border: OutlineInputBorder(),
@@ -195,7 +195,7 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
 
               // Digits
               DropdownButtonFormField<int>(
-                initialValue: _digits,
+                value: _digits,
                 decoration: const InputDecoration(
                   labelText: 'Digits',
                   border: OutlineInputBorder(),
@@ -217,7 +217,7 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
 
                 // Period
                 DropdownButtonFormField<int>(
-                  initialValue: _period,
+                  value: _period,
                   decoration: const InputDecoration(
                     labelText: 'Period (seconds)',
                     border: OutlineInputBorder(),

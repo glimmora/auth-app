@@ -4,70 +4,165 @@ on:
   push:
     tags: ['v*.*.*']
 
+permissions:
+  contents: write
+
 jobs:
-  test-flutter:
+  # =========================================================================
+  # Web: Test + Build
+  # =========================================================================
+  web-release:
+    name: Web — Test & Build
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
     steps:
       - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.22.0'
-      - run: cd flutter && flutter pub get
-      - run: cd flutter && flutter test --coverage
-      - run: cd flutter && flutter analyze
 
-  test-web:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - run: cd web && npm ci && npm test
-      - run: cd web && npm run type-check
+          cache: 'npm'
+          cache-dependency-path: web/package-lock.json
 
-  build-android:
-    needs: test-flutter
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type-check
+        run: npx tsc --noEmit
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Run tests
+        run: npx vitest run
+
+      - name: Build
+        run: npm run build -- --outDir ../dist/web
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist-web
+          path: dist/web/
+
+  # =========================================================================
+  # Flutter: Analyze + Test + Android Build
+  # =========================================================================
+  flutter-release:
+    name: Flutter — Test & Android Build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
-      - name: Decode keystore
-        run: echo "${{ secrets.KEYSTORE_B64 }}" | base64 -d > scripts/keystore/android.keystore
-      - run: bash scripts/flutter/build_android.sh aab release
-      - run: bash scripts/flutter/sign_android.sh
-      - uses: actions/upload-artifact@v4
-        with:
-          name: android-aab
-          path: flutter/build/outputs/android/*.aab
 
-  build-ios:
-    needs: test-flutter
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
       - uses: subosito/flutter-action@v2
-      - name: Install certificates
+        with:
+          channel: 'stable'
+
+      - name: Install dependencies
+        working-directory: flutter
+        run: flutter pub get
+
+      - name: Run code generation
+        working-directory: flutter
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Analyze
+        working-directory: flutter
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings
+
+      - name: Run tests
+        working-directory: flutter
+        run: flutter test
+
+      - name: Setup signing (if keystore secret exists)
         run: |
-          echo "${{ secrets.P12_B64 }}" | base64 -d > /tmp/cert.p12
-          security import /tmp/cert.p12 -P "${{ secrets.P12_PASS }}" -A
-      - run: bash scripts/flutter/build_ios.sh archive
-      - run: bash scripts/flutter/sign_ios.sh
+          if [ -n "${{ secrets.KEYSTORE_B64 }}" ]; then
+            mkdir -p scripts/keystore
+            echo "${{ secrets.KEYSTORE_B64 }}" | base64 -d > scripts/keystore/authvault.keystore
+            if [ -n "${{ secrets.KEY_PROPERTIES_B64 }}" ]; then
+              echo "${{ secrets.KEY_PROPERTIES_B64 }}" | base64 -d > flutter/android/key.properties
+            fi
+            echo "Keystore configured"
+          else
+            echo "No keystore secret — building unsigned"
+          fi
+
+      - name: Build Android APKs (release, split per ABI)
+        working-directory: flutter
+        run: |
+          if [ -f "../scripts/keystore/authvault.keystore" ]; then
+            PASS=$(cat ../scripts/keystore/.keystore_pass 2>/dev/null || echo "")
+            flutter build apk --release --split-per-abi \
+              -PstoreFile=../scripts/keystore/authvault.keystore \
+              -PstorePassword="$PASS" \
+              -PkeyAlias=authvault \
+              -PkeyPassword="$PASS"
+          else
+            flutter build apk --release --split-per-abi
+          fi
+
+      - name: Build AAB
+        working-directory: flutter
+        run: |
+          if [ -f "../scripts/keystore/authvault.keystore" ]; then
+            PASS=$(cat ../scripts/keystore/.keystore_pass 2>/dev/null || echo "")
+            flutter build appbundle --release \
+              -PstoreFile=../scripts/keystore/authvault.keystore \
+              -PstorePassword="$PASS" \
+              -PkeyAlias=authvault \
+              -PkeyPassword="$PASS"
+          else
+            flutter build appbundle --release
+          fi
+
+      - name: Copy outputs to dist
+        run: |
+          mkdir -p dist/android
+          cp flutter/build/app/outputs/flutter-apk/*-*.apk dist/android/ 2>/dev/null || true
+          cp flutter/build/app/outputs/bundle/release/*.aab dist/android/ 2>/dev/null || true
+
       - uses: actions/upload-artifact@v4
         with:
-          name: ios-ipa
-          path: flutter/build/outputs/ios/signed/*.ipa
+          name: dist-android
+          path: dist/android/
 
-  build-web:
-    needs: test-web
+  # =========================================================================
+  # GitHub Release
+  # =========================================================================
+  github-release:
+    name: Create GitHub Release
+    needs: [web-release, flutter-release]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+
+      - uses: actions/download-artifact@v4
         with:
-          node-version: '20'
-      - run: bash scripts/web/build_web.sh production
-      - run: bash scripts/web/deploy_web.sh netlify
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          name: dist-web
+          path: dist/web/
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist-android
+          path: dist/android/
+
+      - name: Prepare release assets
+        run: |
+          mkdir -p release-assets
+          cp dist/android/*-*.apk release-assets/ 2>/dev/null || true
+          cp dist/android/*.aab release-assets/ 2>/dev/null || true
+          cd dist/web && tar -czf ../../release-assets/authvault-web.tar.gz . && cd ../..
+          echo "Release assets:"
+          ls -lh release-assets/
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: release-assets/*

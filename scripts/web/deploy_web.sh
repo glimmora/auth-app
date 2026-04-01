@@ -8,11 +8,13 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 WEB_DIR="$ROOT/web"
-DIST="$WEB_DIR/dist"
+DIST="$ROOT/dist/web"
 TARGET="${1:-netlify}"
 ENV_FILE="$ROOT/scripts/env/.env.web"
 
-set -a; source "$ENV_FILE"; set +a
+if [[ -f "$ENV_FILE" ]]; then
+  set -a; source "$ENV_FILE"; set +a
+fi
 
 [[ -d "$DIST" ]] || { echo "ERROR: Run build_web.sh first"; exit 1; }
 

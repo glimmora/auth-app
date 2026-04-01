@@ -169,27 +169,28 @@ sudo apt-get install -y nodejs
 
 ## 📤 Build Outputs
 
-### Android
+### Android — ABI-split APKs
 ```
-flutter/build/outputs/android/
-├── app-armeabi-v7a-release.apk   # 32-bit ARM
-├── app-arm64-v8a-release.apk     # 64-bit ARM
-├── app-x86_64-release.apk        # 64-bit x86
-└── app-release.aab               # Play Store
-```
-
-### Linux
-```
-flutter/build/outputs/linux/authvault/
-└── authvault                     # Binary
+flutter/build/app/outputs/flutter-apk/
+├── app-armeabi-v7a-release.apk   # 32-bit ARM  (~22 MB)
+├── app-arm64-v8a-release.apk     # 64-bit ARM  (~26 MB)
+└── app-x86_64-release.apk        # 64-bit x86  (~28 MB)
 ```
 
-### Web
+### Web (Flutter PWA)
+```
+flutter/build/web/
+├── index.html
+├── main.dart.js
+├── flutter.js
+└── flutter_service_worker.js
+```
+
+### Web (React/Vite)
 ```
 web/dist/
 ├── index.html
-├── assets/
-└── sw.js                         # Service worker
+└── assets/
 ```
 
 ## ⚡ Cache Performance
@@ -215,16 +216,65 @@ rm -rf .cache/
 
 ## 🧪 Testing
 
+### Web Tests (Vitest)
+
+154 unit and integration tests covering all core modules, hooks, stores, and UI components.
+
 ```bash
-# All tests (cached 1 hour)
-./scripts/test.sh full
+cd web
 
-# Quick tests
-./scripts/test.sh quick
+# Run all tests
+npx vitest run
 
-# Specific tests
-./scripts/test.sh unit
-./scripts/test.sh web
+# Watch mode
+npx vitest
+
+# Run specific test file
+npx vitest run src/core/crypto/totp.test.ts
+```
+
+**Test Coverage:**
+
+| Module | Tests | File |
+|--------|-------|------|
+| TOTP/HOTP Engine | 7 | `core/crypto/totp.test.ts` |
+| AES-256-GCM Crypto | 14 | `core/crypto/aes-gcm.test.ts` |
+| IndexedDB Schema | 23 | `core/db/schema.test.ts` |
+| Time Offset Service | 14 | `core/time/time-offset.test.ts` |
+| AVX Backup Encoder | 5 | `core/avx/encoder.test.ts` |
+| useTOTP Hook | 6 | `hooks/useTOTP.test.ts` |
+| Account Store (Zustand) | 8 | `features/accounts/store.test.ts` |
+| LockScreen | 10 | `features/auth-lock/LockScreen.test.tsx` |
+| AccountCard | 11 | `features/accounts/AccountCard.test.tsx` |
+| AccountsScreen | 7 | `features/accounts/AccountsScreen.test.tsx` |
+| AddAccountScreen | 8 | `features/accounts/AddAccountScreen.test.tsx` |
+| SettingsScreen | 10 | `features/settings/SettingsScreen.test.tsx` |
+| TimeOffsetScreen | 12 | `features/settings/TimeOffsetScreen.test.tsx` |
+| BackupScreen | 11 | `features/backup/BackupScreen.test.tsx` |
+| App Routing | 8 | `App.test.tsx` |
+
+### Flutter Tests
+
+```bash
+cd flutter
+
+# Run all tests
+flutter test
+
+# With coverage
+flutter test --coverage
+```
+
+### Lint & Type Check
+
+```bash
+cd web
+
+# ESLint
+npx eslint src/ --ext .ts,.tsx
+
+# TypeScript type check
+npx tsc --noEmit
 ```
 
 ## 📄 License

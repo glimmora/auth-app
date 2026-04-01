@@ -2,15 +2,15 @@
 # =============================================================================
 # AuthVault — Android Build Script
 # Usage: ./build_android.sh [apk|aab|both] [debug|profile|release]
+# Outputs: auth-app/dist/android/
 # =============================================================================
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 FLUTTER_DIR="$ROOT/flutter"
-OUTPUT_DIR="$FLUTTER_DIR/build/outputs/android"
+OUTPUT_DIR="$ROOT/dist/android"
 ENV_FILE="$ROOT/scripts/env/.env.android"
 
-# Load env
 if [[ -f "$ENV_FILE" ]]; then
   set -a; source "$ENV_FILE"; set +a
 fi
@@ -49,7 +49,7 @@ if [[ "$BUILD_TYPE" == "aab" || "$BUILD_TYPE" == "both" ]]; then
     --obfuscate \
     --split-debug-info="$OUTPUT_DIR/debug-info-aab"
 
-  cp build/app/outputs/bundle/"$FLAVOR"App/*.aab "$OUTPUT_DIR/"
+  cp build/app/outputs/bundle/"$FLAVOR"/*.aab "$OUTPUT_DIR/"
   echo "✅ AAB built: $OUTPUT_DIR/"
 fi
 

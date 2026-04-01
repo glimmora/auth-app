@@ -1,6 +1,11 @@
 import 'dart:typed_data';
+<<<<<<< HEAD
 import 'package:cryptography/cryptography.dart';
 
+=======
+import 'package:pointycastle/macs/hmac.dart';
+import 'package:pointycastle/digests/sha1.dart';
+>>>>>>> babb3b59814fd1012c5cb601c2dd89a61feb6d50
 
 /// Steam Guard TOTP variant
 ///
@@ -31,11 +36,17 @@ class SteamGuard {
       c = c >> 8;
     }
 
+<<<<<<< HEAD
     // Compute HMAC-SHA1 using cryptography package
     final mac = Hmac.sha1();
     final secretKey = SecretKey(key);
     final signature = await mac.calculateMac(counterBytes, secretKey: secretKey);
     final hash = Uint8List.fromList(signature.bytes);
+=======
+    // Compute HMAC-SHA1
+    final hmac = HMac.withDigest(SHA1Digest());
+    final hash = hmac.process(counterBytes);
+>>>>>>> babb3b59814fd1012c5cb601c2dd89a61feb6d50
 
     // Dynamic truncation
     final offsetByte = hash[hash.length - 1] & 0x0F;
