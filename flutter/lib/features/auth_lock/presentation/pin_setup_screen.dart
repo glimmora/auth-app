@@ -63,37 +63,6 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
     }
   }
 
-    if (pin != confirm) {
-      setState(() {
-        _showError = true;
-        _errorMessage = 'PINs do not match';
-      });
-      return;
-    }
-
-    setState(() {
-      _isSubmitting = true;
-      _showError = false;
-    });
-
-    try {
-      await ref.read(settingsProvider.notifier).setPin(pin);
-      ref.read(lockStateProvider.notifier).setUnlocked();
-      
-      if (mounted) {
-        context.go('/home');
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isSubmitting = false;
-          _showError = true;
-          _errorMessage = 'Failed to set PIN: $e';
-        });
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

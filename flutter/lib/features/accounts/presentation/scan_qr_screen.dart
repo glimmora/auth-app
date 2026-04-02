@@ -54,7 +54,7 @@ class _ScanQRScreenState extends State<ScanQRScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.camera_off, size: 64, color: Colors.red),
+              const Icon(Icons.videocam_off, size: 64, color: Colors.red),
               const SizedBox(height: 16),
               Text(
                 _errorMessage!,

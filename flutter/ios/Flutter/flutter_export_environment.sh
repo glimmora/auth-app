@@ -1,6 +1,6 @@
 #!/bin/sh
 # This is a generated file; do not edit or check into version control.
-export "FLUTTER_ROOT=/home/blue/sdk/flutter"
+export "FLUTTER_ROOT=/home/blue/flutter-sdk"
 export "FLUTTER_APPLICATION_PATH=/home/dev/vscode-projects/blue/projects/auth-app/flutter"
 export "COCOAPODS_PARALLEL_CODE_SIGN=true"
 export "FLUTTER_TARGET=lib/main.dart"

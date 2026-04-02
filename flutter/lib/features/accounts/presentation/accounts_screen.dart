@@ -7,7 +7,6 @@ import 'package:shimmer/shimmer.dart';
 import '../../../core/providers/providers.dart';
 import '../../../shared/widgets/otp_progress_ring.dart';
 
-/// Main accounts screen - displays list of TOTP/HOTP accounts with live OTP codes
 class AccountsScreen extends ConsumerStatefulWidget {
   const AccountsScreen({super.key});
 
@@ -50,10 +49,7 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
       ),
       body: Column(
         children: [
-          // Search bar
           if (_searchQuery.isNotEmpty || _showFavoritesOnly) _buildFilterBar(),
-
-          // Accounts list
           Expanded(
             child: otpCodesAsync.when(
               data: (otpCodes) => _buildAccountsList(accounts, otpCodes),
@@ -111,7 +107,6 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
 
     var filteredAccounts = accounts;
 
-    // Apply search filter
     if (_searchQuery.isNotEmpty) {
       filteredAccounts = accounts.where((account) {
         final issuer = account.issuer.toLowerCase();
@@ -121,7 +116,6 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
       }).toList();
     }
 
-    // Apply favorites filter
     if (_showFavoritesOnly) {
       filteredAccounts =
           accounts.where((account) => account.favorite).toList();
@@ -166,7 +160,6 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
           padding: const EdgeInsets.all(12),
           child: Row(
             children: [
-              // Icon
               CircleAvatar(
                 backgroundColor: Colors.blue[800],
                 radius: 24,
@@ -181,12 +174,7 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
                   ),
                 ),
               ),
-                ),
-              ),
-
               const SizedBox(width: 16),
-
-              // Account info
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -216,8 +204,6 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
                   ],
                 ),
               ),
-
-              // OTP Code with progress ring
               Row(
                 children: [
                   GestureDetector(
@@ -256,7 +242,6 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
                     ),
                   ),
                   const SizedBox(width: 4),
-                  // OTP Code
                   GestureDetector(
                     onTap: () => _copyCode(otpCode),
                     onLongPress: () => _copyCode(otpCode),
@@ -271,7 +256,6 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  // Copy button
                   IconButton(
                     icon: const Icon(Icons.copy, size: 20),
                     onPressed: () => _copyCode(otpCode),
@@ -455,8 +439,6 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
       } else {
         _searchQuery = '';
       }
-    });
-  }
     });
   }
 
