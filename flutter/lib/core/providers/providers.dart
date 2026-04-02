@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
@@ -176,7 +175,7 @@ class AccountsNotifier extends StateNotifier<List<domain.Account>> {
       digits: Value(digits),
       period: Value(period),
       counter: Value(counter),
-      timeOffset: Value(0),
+      timeOffset: const Value(0),
       groupId: const Value(null),
       iconName: Value(iconName),
       iconCustom: Value(iconCustom),

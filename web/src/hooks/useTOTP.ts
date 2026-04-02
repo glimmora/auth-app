@@ -9,10 +9,6 @@ export interface TOTPState {
   progress: number;
 }
 
-/**
- * React hook for reactive TOTP code generation
- * Updates every second
- */
 export function useTOTP(account: Account, globalOffset: number = 0): TOTPState {
   const [state, setState] = useState<TOTPState>(() =>
     computeState(account, globalOffset)
@@ -23,14 +19,11 @@ export function useTOTP(account: Account, globalOffset: number = 0): TOTPState {
       setState(computeState(account, globalOffset));
     };
 
-    // Compute immediately
     computeAndSet();
 
-    // Update every second
     const interval = setInterval(computeAndSet, 1000);
 
     return () => clearInterval(interval);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account.uuid, account.period, globalOffset, account.timeOffset]);
 
   return state;
@@ -40,20 +33,20 @@ function computeState(account: Account, globalOffset: number): TOTPState {
   const totalOffset = (account.timeOffset || 0) + globalOffset;
   const period = account.period || 30;
 
+  const secret = getSecret(account);
+
   const code = generateTOTP({
-    secret: 'JBSWY3DPEHPK3PXP', // Placeholder - would decrypt from account.encryptedPayload
+    secret,
     digits: account.digits,
     period,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     algorithm: account.algorithm as any,
     offset: totalOffset,
   });
 
   const nextCode = getNextTOTP({
-    secret: 'JBSWY3DPEHPK3PXP',
+    secret,
     digits: account.digits,
     period,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     algorithm: account.algorithm as any,
     offset: totalOffset,
   });
@@ -67,4 +60,16 @@ function computeState(account: Account, globalOffset: number): TOTPState {
     nextCode,
     progress,
   };
+}
+
+function getSecret(account: Account): string {
+  if (account.encryptedPayload && account.encryptedPayload.length > 0) {
+    try {
+      const decoder = new TextDecoder();
+      return decoder.decode(account.encryptedPayload);
+    } catch {
+      return '';
+    }
+  }
+  return '';
 }

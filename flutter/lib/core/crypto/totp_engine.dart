@@ -2,20 +2,12 @@ import 'dart:typed_data';
 import 'package:pointycastle/digests/sha1.dart';
 import 'package:pointycastle/digests/sha256.dart';
 import 'package:pointycastle/digests/sha512.dart';
+import 'package:pointycastle/api.dart';
 import 'package:pointycastle/macs/hmac.dart';
 
 import 'otp_algorithm.dart';
 
-/// TOTP Algorithm as per RFC 6238
-/// Supports 6, 7, 8 digit codes with configurable periods and algorithms
 class TOTPEngine {
-  /// Generates a TOTP code per RFC 6238.
-  ///
-  /// [secret]    Base32-encoded shared secret
-  /// [digits]    Code length: 6, 7, or 8
-  /// [period]    Time step in seconds: 15, 30, 60, 90, 120
-  /// [algorithm] HmacSHA1 | HmacSHA256 | HmacSHA512
-  /// [offset]    Custom time offset in seconds (positive = ahead, negative = behind)
   static String generate({
     required String secret,
     int digits = 6,
@@ -34,21 +26,18 @@ class TOTPEngine {
     );
   }
 
-  /// Returns seconds remaining in the current time step.
   static int remainingSeconds({int period = 30, int offset = 0}) {
     final adjustedTime =
         (DateTime.now().millisecondsSinceEpoch ~/ 1000) + offset;
     return period - (adjustedTime % period);
   }
 
-  /// Returns the progress (0.0 to 1.0) of the current time step.
   static double progress({int period = 30, int offset = 0}) {
     final adjustedTime =
         (DateTime.now().millisecondsSinceEpoch ~/ 1000) + offset;
     return (adjustedTime % period) / period;
   }
 
-  /// Returns the next code (for next-code preview feature).
   static String nextCode({
     required String secret,
     int digits = 6,
@@ -73,46 +62,41 @@ class TOTPEngine {
     int digits = 6,
     OTPAlgorithm algorithm = OTPAlgorithm.SHA1,
   }) {
-    // Decode base32 secret
     final key = _base32Decode(secret.toUpperCase().replaceAll(' ', ''));
 
-    // Create counter bytes (big-endian 8 bytes)
     final counterBytes = Uint8List(8);
     for (var i = 7; i >= 0; i--) {
       counterBytes[i] = counter & 0xFF;
       counter = counter >> 8;
     }
 
-    // Select hash algorithm
     final hmac = _getHmac(algorithm, key);
-
-    // Compute HMAC
     final hash = hmac.process(counterBytes);
 
-    // Dynamic truncation (RFC 4226)
     final offset = hash[hash.length - 1] & 0x0F;
     var binaryCode = 0;
     for (var i = 0; i < 4; i++) {
       binaryCode = (binaryCode << 8) | (hash[offset + i] & 0xFF);
     }
-    binaryCode &= 0x7FFFFFFF; // Clear the most significant bit
+    binaryCode &= 0x7FFFFFFF;
 
-    // Generate OTP
     final otp = binaryCode % _pow10(digits);
 
-    // Pad with leading zeros
     return otp.toString().padLeft(digits, '0');
   }
 
   static HMac _getHmac(OTPAlgorithm algorithm, Uint8List key) {
+    final HMac hmac;
     switch (algorithm) {
       case OTPAlgorithm.SHA1:
-        return HMac.withDigest(SHA1Digest());
+        hmac = HMac(SHA1Digest(), 64);
       case OTPAlgorithm.SHA256:
-        return HMac.withDigest(SHA256Digest());
+        hmac = HMac(SHA256Digest(), 64);
       case OTPAlgorithm.SHA512:
-        return HMac.withDigest(SHA512Digest());
+        hmac = HMac(SHA512Digest(), 128);
     }
+    hmac.init(KeyParameter(key));
+    return hmac;
   }
 
   static int _pow10(int exponent) {
@@ -124,7 +108,6 @@ class TOTPEngine {
   }
 
   static Uint8List _base32Decode(String input) {
-    // Remove padding and whitespace
     input = input.replaceAll('=', '').replaceAll(' ', '');
 
     const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';

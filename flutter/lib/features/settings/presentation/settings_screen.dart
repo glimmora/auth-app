@@ -86,26 +86,25 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               error = null;
             });
 
-            try {
-              final settings = ref.read(settingsProvider);
-              if (settings.pinHash != null && settings.pinSalt != null) {
-                final verified = await ref.read(settingsProvider.notifier).verifyPin(currentPin);
-                if (!verified) {
-                  setDialogState(() {
-                    isChanging = false;
-                    error = 'Current PIN is incorrect';
-                  });
-                  return;
+              try {
+                final settings = ref.read(settingsProvider);
+                if (settings.pinHash != null && settings.pinSalt != null) {
+                  final verified = await ref.read(settingsProvider.notifier).verifyPin(currentPin);
+                  if (!verified) {
+                    setDialogState(() {
+                      isChanging = false;
+                      error = 'Current PIN is incorrect';
+                    });
+                    return;
+                  }
                 }
-              }
-              await ref.read(settingsProvider.notifier).setPin(newPin);
-              if (mounted) {
+                await ref.read(settingsProvider.notifier).setPin(newPin);
                 Navigator.pop(dialogContext);
-                ScaffoldMessenger.of(context).showSnackBar(
+                if (!mounted) return;
+                ScaffoldMessenger.of(this.context).showSnackBar(
                   const SnackBar(content: Text('PIN changed successfully')),
                 );
-              }
-            } catch (e) {
+              } catch (e) {
               setDialogState(() {
                 isChanging = false;
                 error = 'Failed to change PIN: $e';
@@ -246,14 +245,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               try {
                 await ref.read(settingsProvider.notifier).setBiometricEnabled(value);
               } catch (e) {
-                if (mounted) {
-                  setState(() {
-                    _biometricEnabled = !value;
-                  });
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Failed to update: $e')),
-                  );
-                }
+                if (!mounted) return;
+                setState(() {
+                  _biometricEnabled = !value;
+                });
+                ScaffoldMessenger.of(this.context).showSnackBar(
+                  SnackBar(content: Text('Failed to update: $e')),
+                );
               }
             },
           ),
@@ -283,21 +281,20 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               try {
                 await ref.read(settingsProvider.notifier).setTapToReveal(value);
               } catch (e) {
-                if (mounted) {
-                  setState(() {
-                    _tapToReveal = !value;
-                  });
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Failed to update: $e')),
-                  );
-                }
+                if (!mounted) return;
+                setState(() {
+                  _tapToReveal = !value;
+                });
+                ScaffoldMessenger.of(this.context).showSnackBar(
+                  SnackBar(content: Text('Failed to update: $e')),
+                );
               }
             },
           ),
           ListTile(
             leading: const Icon(Icons.content_paste),
             title: const Text('Clipboard Clear'),
-            subtitle: Text('After ${_clipboardClearSeconds} seconds'),
+            subtitle: Text('After $_clipboardClearSeconds seconds'),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => _showClipboardDurationDialog(),
           ),

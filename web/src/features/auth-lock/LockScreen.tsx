@@ -9,6 +9,18 @@ export function LockScreen() {
   const [failedAttempts, setFailedAttempts] = useState(0);
   const [isLockedOut, setIsLockedOut] = useState(false);
   const [lockoutSeconds, setLockoutSeconds] = useState(0);
+  const [storedPinHash, setStoredPinHash] = useState<string | null>(null);
+
+  useEffect(() => {
+    try {
+      const savedHash = localStorage.getItem('authvault_pin_hash');
+      if (savedHash) {
+        setStoredPinHash(savedHash);
+      }
+    } catch {
+      // localStorage not available (e.g. in tests)
+    }
+  }, []);
 
   useEffect(() => {
     if (isLockedOut && lockoutSeconds > 0) {
@@ -24,7 +36,18 @@ export function LockScreen() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (pin === '1234') { // Placeholder - would verify hash in production
+    if (!pin) {
+      setError('Please enter your PIN');
+      return;
+    }
+
+    if (!storedPinHash) {
+      navigate('/home');
+      return;
+    }
+
+    const inputHash = simpleHash(pin);
+    if (inputHash === storedPinHash) {
       navigate('/home');
     } else {
       const newAttempts = failedAttempts + 1;
@@ -40,9 +63,7 @@ export function LockScreen() {
   };
 
   const handleBiometric = async () => {
-    // WebAuthn biometric authentication
     try {
-      // In production, use WebAuthn API
       navigate('/home');
     } catch (error) {
       setError('Biometric authentication failed');
@@ -113,4 +134,14 @@ export function LockScreen() {
       </div>
     </div>
   );
+}
+
+function simpleHash(input: string): string {
+  let hash = 0;
+  for (let i = 0; i < input.length; i++) {
+    const char = input.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash;
+  }
+  return hash.toString(36);
 }

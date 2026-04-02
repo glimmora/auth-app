@@ -1,12 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:authvault/core/crypto/totp_engine.dart';
+import 'package:authvault/core/crypto/otp_algorithm.dart';
 
 void main() {
   group('TOTP Engine', () {
     test('generates correct 6-digit code', () {
-      // Test with known secret
       final code = TOTPEngine.generate(
-        secret: 'JBSWY3DPEHPK3PXP', // "Hello!" in base32
+        secret: 'JBSWY3DPEHPK3PXP',
         digits: 6,
         period: 30,
         algorithm: OTPAlgorithm.SHA1,
@@ -48,8 +48,6 @@ void main() {
         offset: 30,
       );
 
-      // Codes may or may not be different depending on timing
-      // but both should be valid 6-digit codes
       expect(code0.length, equals(6));
       expect(code30.length, equals(6));
     });
@@ -87,7 +85,6 @@ void main() {
         algorithm: OTPAlgorithm.SHA512,
       );
 
-      // All should be valid 6-digit codes
       expect(sha1.length, equals(6));
       expect(sha256.length, equals(6));
       expect(sha512.length, equals(6));

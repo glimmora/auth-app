@@ -72,7 +72,8 @@ export async function getAllAccounts(): Promise<Account[]> {
 }
 
 export async function getFavoriteAccounts(): Promise<Account[]> {
-  return await db.accounts.where('favorite').equals(1).toArray();
+  const all = await db.accounts.toArray();
+  return all.filter((a) => a.favorite === true);
 }
 
 export async function getAccountByUuid(uuid: string): Promise<Account | undefined> {

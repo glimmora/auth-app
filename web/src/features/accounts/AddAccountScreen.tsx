@@ -1,9 +1,34 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, QrCode, Image, Edit } from 'lucide-react';
+import { Html5Qrcode } from 'html5-qrcode';
+import toast from 'react-hot-toast';
 
 export function AddAccountScreen() {
   const navigate = useNavigate();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImageImport = async () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const scanner = new Html5Qrcode('hidden-qr-reader');
+      const result = await scanner.scanFile(file, false);
+      if (result && result.startsWith('otpauth://')) {
+        navigate('/account/add/manual');
+        toast.success('QR code found from image');
+      } else {
+        toast.error('No valid otpauth:// QR code found in image');
+      }
+    } catch {
+      toast.error('No QR code detected in image');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -32,7 +57,7 @@ export function AddAccountScreen() {
         </button>
 
         <button
-          onClick={() => {}}
+          onClick={handleImageImport}
           className="w-full bg-surface rounded-xl p-4 flex items-center gap-4 hover:bg-surface/80 transition-colors"
         >
           <div className="w-12 h-12 rounded-full bg-green-600 flex items-center justify-center">
@@ -64,6 +89,15 @@ export function AddAccountScreen() {
           </p>
         </div>
       </main>
+
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleFileChange}
+        className="hidden"
+      />
+      <div id="hidden-qr-reader" className="hidden" />
     </div>
   );
 }

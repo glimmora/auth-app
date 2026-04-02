@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:authvault/core/crypto/hotp_engine.dart';
+import 'package:authvault/core/crypto/otp_algorithm.dart';
 
 void main() {
   group('HOTP Engine', () {

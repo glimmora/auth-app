@@ -40,7 +40,7 @@ class _BackupScreenState extends State<BackupScreen> {
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton.icon(
-                    onPressed: _isExporting ? null : () => _exportBackup(context),
+                    onPressed: _isExporting ? null : () => _exportBackup(),
                     icon: _isExporting
                         ? const SizedBox(
                             height: 16,
@@ -55,7 +55,7 @@ class _BackupScreenState extends State<BackupScreen> {
                   ),
                   const SizedBox(height: 8),
                   OutlinedButton.icon(
-                    onPressed: () => _exportToCloud(context),
+                    onPressed: () => _exportToCloud(),
                     icon: const Icon(Icons.cloud_upload),
                     label: const Text('Backup to Cloud'),
                     style: OutlinedButton.styleFrom(
@@ -87,7 +87,7 @@ class _BackupScreenState extends State<BackupScreen> {
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton.icon(
-                    onPressed: _isImporting ? null : () => _importBackup(context),
+                    onPressed: _isImporting ? null : () => _importBackup(),
                     icon: _isImporting
                         ? const SizedBox(
                             height: 16,
@@ -168,7 +168,7 @@ class _BackupScreenState extends State<BackupScreen> {
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton.icon(
-                    onPressed: () => _exportQR(context),
+                    onPressed: () => _exportQR(),
                     icon: const Icon(Icons.qr_code),
                     label: const Text('Export as QR Codes'),
                     style: ElevatedButton.styleFrom(
@@ -207,7 +207,7 @@ class _BackupScreenState extends State<BackupScreen> {
     );
   }
 
-  Future<void> _exportBackup(BuildContext context) async {
+  Future<void> _exportBackup() async {
     if (_isExporting) return;
 
     setState(() {
@@ -222,29 +222,28 @@ class _BackupScreenState extends State<BackupScreen> {
         allowedExtensions: ['avx'],
       );
 
-      if (path != null && mounted) {
+      if (path != null) {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Backup saved to $path')),
         );
       }
     } on PlatformException catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Export failed: ${e.message ?? 'Unknown error'}'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Export failed: ${e.message ?? 'Unknown error'}'),
+          backgroundColor: Colors.red,
+        ),
+      );
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Export failed: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Export failed: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
     } finally {
       if (mounted) {
         setState(() {
@@ -254,13 +253,13 @@ class _BackupScreenState extends State<BackupScreen> {
     }
   }
 
-  Future<void> _exportToCloud(BuildContext context) async {
+  Future<void> _exportToCloud() async {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Connect to cloud storage first')),
     );
   }
 
-  Future<void> _importBackup(BuildContext context) async {
+  Future<void> _importBackup() async {
     if (_isImporting) return;
 
     setState(() {
@@ -275,34 +274,29 @@ class _BackupScreenState extends State<BackupScreen> {
 
       if (result != null && result.files.isNotEmpty) {
         final file = result.files.first;
-        if (file.path != null && mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Import successful')),
-          );
-        } else if (file.bytes != null && mounted) {
+        if (file.path != null || file.bytes != null) {
+          if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Import successful')),
           );
         }
       }
     } on PlatformException catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Import failed: ${e.message ?? 'Unknown error'}'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Import failed: ${e.message ?? 'Unknown error'}'),
+          backgroundColor: Colors.red,
+        ),
+      );
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Import failed: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Import failed: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
     } finally {
       if (mounted) {
         setState(() {
@@ -312,7 +306,7 @@ class _BackupScreenState extends State<BackupScreen> {
     }
   }
 
-  Future<void> _exportQR(BuildContext context) async {
+  Future<void> _exportQR() async {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('QR export feature coming soon')),
     );

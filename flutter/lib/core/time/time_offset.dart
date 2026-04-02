@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart';
 /// Manages custom time offset for TOTP/HOTP synchronization
 /// Range: -300 to +300 seconds (±5 minutes)
 class TimeOffsetService {
-  static const _key = 'time_offset_seconds';
   static const _maxOffset = 300;
   static const _minOffset = -300;
 

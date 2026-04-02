@@ -64,12 +64,12 @@ export const useAccountStore = create<AccountStore>()(
 
     reorderAccounts: async (from, to) => {
       const { reorderAccounts } = await import('@/core/db/schema');
-      const accounts = get().accounts;
-      const [removed] = accounts.splice(from, 1);
-      accounts.splice(to, 0, removed);
-      const ids = accounts.map((a) => a.id!).filter(Boolean) as number[];
-      await reorderAccounts(ids);
-      set({ accounts: [...accounts] });
+      set((state) => {
+        const [removed] = state.accounts.splice(from, 1);
+        state.accounts.splice(to, 0, removed);
+        const ids = state.accounts.map((a) => a.id!).filter(Boolean) as number[];
+        reorderAccounts(ids);
+      });
     },
 
     setGlobalTimeOffset: (seconds) => {

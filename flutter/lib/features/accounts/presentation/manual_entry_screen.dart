@@ -1,17 +1,12 @@
 import 'dart:math';
 
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import 'package:uuid/uuid.dart';
 
 import '../../../core/providers/providers.dart';
 import '../domain/account.dart';
 
-/// Manual entry screen for adding accounts
 class ManualEntryScreen extends ConsumerStatefulWidget {
   const ManualEntryScreen({super.key});
 
@@ -40,57 +35,60 @@ class _ManualEntryScreenState extends ConsumerState<ManualEntryScreen> {
   }
 
   Future<void> _handleSubmit() async {
-    if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isSubmitting = true;
-      });
+    if (!_formKey.currentState!.validate()) return;
 
-      try {
-        final accountType = AccountTypeExtension.fromName(_accountType);
-        
-        await ref.read(accountsProvider.notifier).addAccount(
-          issuer: _issuerController.text.trim(),
-          label: _labelController.text.trim(),
-          secret: _secretController.text.trim().toUpperCase(),
-          type: accountType,
-          algorithm: _algorithm,
-          digits: _digits,
-          period: _period,
-          counter: 0,
-          iconName: _getIconForIssuer(_issuerController.text.trim()),
-        );
+    setState(() {
+      _isSubmitting = true;
+    });
 
-        if (mounted) {
-          // Log audit event
-          final db = ref.read(databaseProvider);
-          await db.logAction(
-            'ADD_ACCOUNT',
-            details: 'Added ${_issuerController.text} manually',
-          );
+    try {
+      final accountType = AccountTypeExtension.fromName(_accountType);
 
-          Navigator.pop(context);
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Account added successfully'),
-              backgroundColor: Colors.green,
-            ),
-          );
-        }
-      } catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Failed to add account: $e'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
-      } finally {
-        if (mounted) {
-          setState(() {
-            _isSubmitting = false;
-          });
-        }
+      await ref.read(accountsProvider.notifier).addAccount(
+        issuer: _issuerController.text.trim(),
+        label: _labelController.text.trim(),
+        secret: _secretController.text.trim().toUpperCase(),
+        type: accountType,
+        algorithm: _algorithm,
+        digits: _digits,
+        period: _period,
+        counter: 0,
+        iconName: _getIconForIssuer(_issuerController.text.trim()),
+      );
+
+      if (!mounted) return;
+
+      final db = ref.read(databaseProvider);
+      await db.logAction(
+        'ADD_ACCOUNT',
+        details: 'Added ${_issuerController.text} manually',
+      );
+
+      if (!mounted) return;
+
+      Navigator.pop(context);
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Account added successfully'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to add account: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSubmitting = false;
+        });
       }
     }
   }
@@ -132,9 +130,8 @@ class _ManualEntryScreenState extends ConsumerState<ManualEntryScreen> {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            // Account Type
             DropdownButtonFormField<String>(
-              value: _accountType,
+              initialValue: _accountType,
               decoration: const InputDecoration(
                 labelText: 'Account Type',
                 border: OutlineInputBorder(),
@@ -153,7 +150,6 @@ class _ManualEntryScreenState extends ConsumerState<ManualEntryScreen> {
 
             const SizedBox(height: 16),
 
-            // Issuer
             TextFormField(
               controller: _issuerController,
               decoration: const InputDecoration(
@@ -172,7 +168,6 @@ class _ManualEntryScreenState extends ConsumerState<ManualEntryScreen> {
 
             const SizedBox(height: 16),
 
-            // Label
             TextFormField(
               controller: _labelController,
               decoration: const InputDecoration(
@@ -190,7 +185,6 @@ class _ManualEntryScreenState extends ConsumerState<ManualEntryScreen> {
 
             const SizedBox(height: 16),
 
-            // Secret
             TextFormField(
               controller: _secretController,
               decoration: InputDecoration(
@@ -223,7 +217,6 @@ class _ManualEntryScreenState extends ConsumerState<ManualEntryScreen> {
                 if (value == null || value.isEmpty) {
                   return 'Please enter a secret key';
                 }
-                // Validate base32
                 if (!RegExp(r'^[A-Z2-7]+$').hasMatch(value.toUpperCase())) {
                   return 'Invalid base32 format';
                 }
@@ -234,9 +227,8 @@ class _ManualEntryScreenState extends ConsumerState<ManualEntryScreen> {
             if (_accountType != 'steam') ...[
               const SizedBox(height: 16),
 
-              // Algorithm
               DropdownButtonFormField<String>(
-                value: _algorithm,
+                initialValue: _algorithm,
                 decoration: const InputDecoration(
                   labelText: 'Algorithm',
                   border: OutlineInputBorder(),
@@ -255,9 +247,8 @@ class _ManualEntryScreenState extends ConsumerState<ManualEntryScreen> {
 
               const SizedBox(height: 16),
 
-              // Digits
               DropdownButtonFormField<int>(
-                value: _digits,
+                initialValue: _digits,
                 decoration: const InputDecoration(
                   labelText: 'Digits',
                   border: OutlineInputBorder(),
@@ -277,9 +268,8 @@ class _ManualEntryScreenState extends ConsumerState<ManualEntryScreen> {
               if (_accountType == 'totp') ...[
                 const SizedBox(height: 16),
 
-                // Period
                 DropdownButtonFormField<int>(
-                  value: _period,
+                  initialValue: _period,
                   decoration: const InputDecoration(
                     labelText: 'Period (seconds)',
                     border: OutlineInputBorder(),
@@ -302,7 +292,6 @@ class _ManualEntryScreenState extends ConsumerState<ManualEntryScreen> {
 
             const SizedBox(height: 32),
 
-            // Submit button
             ElevatedButton(
               onPressed: _isSubmitting ? null : _handleSubmit,
               style: ElevatedButton.styleFrom(
@@ -320,7 +309,6 @@ class _ManualEntryScreenState extends ConsumerState<ManualEntryScreen> {
                   : const Text('Add Account'),
             ),
 
-            // Bottom padding for navigation bar
             const SizedBox(height: 32),
           ],
         ),

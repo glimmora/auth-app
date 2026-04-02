@@ -1,18 +1,11 @@
 import 'dart:typed_data';
+import 'package:pointycastle/api.dart';
 import 'package:pointycastle/macs/hmac.dart';
 import 'package:pointycastle/digests/sha1.dart';
 
-/// Steam Guard TOTP variant
-///
-/// Steam uses SHA-1 TOTP with 30s period but encodes the result
-/// as 5 characters from a custom alphabet instead of decimal digits.
 class SteamGuard {
   static const _steamAlphabet = '23456789BCDFGHJKMNPQRTVWXY';
 
-  /// Generates a Steam Guard code
-  ///
-  /// [secret] Base32-encoded shared secret
-  /// [offset] Custom time offset in seconds
   static String generateCode({
     required String secret,
     int offset = 0,
@@ -21,9 +14,8 @@ class SteamGuard {
         (DateTime.now().millisecondsSinceEpoch ~/ 1000) + offset;
     final counter = adjustedTime ~/ 30;
 
-    final key = _base32Decode(secret.toUpperCase().replaceAll(' ', ''));
+    final keyBytes = _base32Decode(secret.toUpperCase().replaceAll(' ', ''));
 
-    // Create counter bytes (big-endian 8 bytes)
     final counterBytes = Uint8List(8);
     var c = counter;
     for (var i = 7; i >= 0; i--) {
@@ -31,11 +23,10 @@ class SteamGuard {
       c = c >> 8;
     }
 
-    // Compute HMAC-SHA1
-    final hmac = HMac.withDigest(SHA1Digest());
+    final hmac = HMac(SHA1Digest(), 64);
+    hmac.init(KeyParameter(keyBytes));
     final hash = hmac.process(counterBytes);
 
-    // Dynamic truncation
     final offsetByte = hash[hash.length - 1] & 0x0F;
     var binaryCode = 0;
     for (var i = 0; i < 4; i++) {
@@ -43,7 +34,6 @@ class SteamGuard {
     }
     binaryCode &= 0x7FFFFFFF;
 
-    // Generate 5-character Steam code
     final result = StringBuffer();
     for (var i = 0; i < 5; i++) {
       result.write(_steamAlphabet[binaryCode % _steamAlphabet.length]);

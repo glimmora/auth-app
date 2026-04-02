@@ -2,19 +2,12 @@ import 'dart:typed_data';
 import 'package:pointycastle/digests/sha1.dart';
 import 'package:pointycastle/digests/sha256.dart';
 import 'package:pointycastle/digests/sha512.dart';
+import 'package:pointycastle/api.dart';
 import 'package:pointycastle/macs/hmac.dart';
 
 import 'otp_algorithm.dart';
 
-/// HOTP Algorithm as per RFC 4226
-/// Counter-based OTP (used for hardware tokens and some services)
 class HOTPEngine {
-  /// Generates a HOTP code per RFC 4226.
-  ///
-  /// [secret]    Base32-encoded shared secret
-  /// [counter]   Counter value (incremented after each use)
-  /// [digits]    Code length: 6, 7, or 8
-  /// [algorithm] HmacSHA1 | HmacSHA256 | HmacSHA512
   static String generate({
     required String secret,
     required int counter,
@@ -35,23 +28,17 @@ class HOTPEngine {
     int digits = 6,
     OTPAlgorithm algorithm = OTPAlgorithm.SHA1,
   }) {
-    // Decode base32 secret
     final key = _base32Decode(secret.toUpperCase().replaceAll(' ', ''));
 
-    // Create counter bytes (big-endian 8 bytes)
     final counterBytes = Uint8List(8);
     for (var i = 7; i >= 0; i--) {
       counterBytes[i] = counter & 0xFF;
       counter = counter >> 8;
     }
 
-    // Select hash algorithm
     final hmac = _getHmac(algorithm, key);
-
-    // Compute HMAC
     final hash = hmac.process(counterBytes);
 
-    // Dynamic truncation (RFC 4226)
     final offset = hash[hash.length - 1] & 0x0F;
     var binaryCode = 0;
     for (var i = 0; i < 4; i++) {
@@ -59,22 +46,23 @@ class HOTPEngine {
     }
     binaryCode &= 0x7FFFFFFF;
 
-    // Generate OTP
     final otp = binaryCode % _pow10(digits);
 
-    // Pad with leading zeros
     return otp.toString().padLeft(digits, '0');
   }
 
   static HMac _getHmac(OTPAlgorithm algorithm, Uint8List key) {
+    final HMac hmac;
     switch (algorithm) {
       case OTPAlgorithm.SHA1:
-        return HMac.withDigest(SHA1Digest());
+        hmac = HMac(SHA1Digest(), 64);
       case OTPAlgorithm.SHA256:
-        return HMac.withDigest(SHA256Digest());
+        hmac = HMac(SHA256Digest(), 64);
       case OTPAlgorithm.SHA512:
-        return HMac.withDigest(SHA512Digest());
+        hmac = HMac(SHA512Digest(), 128);
     }
+    hmac.init(KeyParameter(key));
+    return hmac;
   }
 
   static int _pow10(int exponent) {

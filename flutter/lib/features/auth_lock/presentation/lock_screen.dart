@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
@@ -184,7 +182,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
   @override
   Widget build(BuildContext context) {
     final settings = ref.watch(settingsProvider);
-    final biometricEnabled = settings.biometricEnabled && _hasBiometricsEnrolled;
+    final biometricEnabled = settings.biometricEnabled && _canCheckBiometrics && _hasBiometricsEnrolled;
 
     return Scaffold(
       body: SafeArea(
