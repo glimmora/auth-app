@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -125,9 +126,9 @@ class SettingsNotifier extends StateNotifier<domain.AppSettings> {
   }
 
   Uint8List _generateSalt() {
-    final random = DateTime.now().microsecondsSinceEpoch;
+    final random = Random.secure();
     return Uint8List.fromList(
-      List.generate(16, (i) => (random + i) % 256),
+      List.generate(16, (_) => random.nextInt(256)),
     );
   }
 }

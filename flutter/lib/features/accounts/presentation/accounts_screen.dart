@@ -171,12 +171,16 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
                 backgroundColor: Colors.blue[800],
                 radius: 24,
                 child: Text(
-                  account.issuer[0].toUpperCase(),
+                  account.issuer.isNotEmpty
+                      ? account.issuer[0].toUpperCase()
+                      : '?',
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
+                ),
+              ),
                 ),
               ),
 
@@ -446,7 +450,13 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> {
 
   void _toggleSearch() {
     setState(() {
-      _searchQuery = _searchQuery.isEmpty ? '' : _searchQuery;
+      if (_searchQuery.isEmpty) {
+        _searchQuery = ' ';
+      } else {
+        _searchQuery = '';
+      }
+    });
+  }
     });
   }
 

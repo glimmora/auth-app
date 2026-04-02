@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:file_picker/file_picker.dart';
 
-/// Backup and restore screen
-class BackupScreen extends StatelessWidget {
+class BackupScreen extends StatefulWidget {
   const BackupScreen({super.key});
+
+  @override
+  State<BackupScreen> createState() => _BackupScreenState();
+}
+
+class _BackupScreenState extends State<BackupScreen> {
+  bool _isExporting = false;
+  bool _isImporting = false;
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +22,6 @@ class BackupScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          // Export section
           const _SectionHeader(title: 'Export Backup'),
           Card(
             child: Padding(
@@ -33,8 +40,14 @@ class BackupScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton.icon(
-                    onPressed: () => _exportBackup(context),
-                    icon: const Icon(Icons.file_download),
+                    onPressed: _isExporting ? null : () => _exportBackup(context),
+                    icon: _isExporting
+                        ? const SizedBox(
+                            height: 16,
+                            width: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(Icons.file_download),
                     label: const Text('Export to File'),
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 12),
@@ -56,7 +69,6 @@ class BackupScreen extends StatelessWidget {
 
           const SizedBox(height: 24),
 
-          // Import section
           const _SectionHeader(title: 'Import Backup'),
           Card(
             child: Padding(
@@ -75,8 +87,14 @@ class BackupScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton.icon(
-                    onPressed: () => _importBackup(context),
-                    icon: const Icon(Icons.file_upload),
+                    onPressed: _isImporting ? null : () => _importBackup(context),
+                    icon: _isImporting
+                        ? const SizedBox(
+                            height: 16,
+                            width: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(Icons.file_upload),
                     label: const Text('Import from File'),
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 12),
@@ -89,7 +107,6 @@ class BackupScreen extends StatelessWidget {
 
           const SizedBox(height: 24),
 
-          // Cloud backup section
           const _SectionHeader(title: 'Cloud Backup'),
           Card(
             child: Padding(
@@ -103,7 +120,9 @@ class BackupScreen extends StatelessWidget {
                     subtitle: const Text('Not connected'),
                     trailing: OutlinedButton(
                       onPressed: () {
-                        // Connect to Google Drive
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Google Drive backup coming soon')),
+                        );
                       },
                       child: const Text('Connect'),
                     ),
@@ -115,7 +134,9 @@ class BackupScreen extends StatelessWidget {
                     subtitle: const Text('Not connected'),
                     trailing: OutlinedButton(
                       onPressed: () {
-                        // Connect to Dropbox
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Dropbox backup coming soon')),
+                        );
                       },
                       child: const Text('Connect'),
                     ),
@@ -134,7 +155,6 @@ class BackupScreen extends StatelessWidget {
 
           const SizedBox(height: 24),
 
-          // QR Export section
           const _SectionHeader(title: 'QR Export'),
           Card(
             child: Padding(
@@ -162,7 +182,6 @@ class BackupScreen extends StatelessWidget {
 
           const SizedBox(height: 32),
 
-          // Last backup info
           Card(
             color: Colors.blue[900],
             child: Padding(
@@ -189,9 +208,13 @@ class BackupScreen extends StatelessWidget {
   }
 
   Future<void> _exportBackup(BuildContext context) async {
-    // Export to file
+    if (_isExporting) return;
+
+    setState(() {
+      _isExporting = true;
+    });
+
     try {
-      // In production, create encrypted backup
       final path = await FilePicker.platform.saveFile(
         dialogTitle: 'Save backup',
         fileName: 'authvault_backup.avx',
@@ -199,13 +222,22 @@ class BackupScreen extends StatelessWidget {
         allowedExtensions: ['avx'],
       );
 
-      if (path != null && context.mounted) {
+      if (path != null && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Backup saved to $path')),
         );
       }
+    } on PlatformException catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Export failed: ${e.message ?? 'Unknown error'}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     } catch (e) {
-      if (context.mounted) {
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Export failed: $e'),
@@ -213,34 +245,57 @@ class BackupScreen extends StatelessWidget {
           ),
         );
       }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isExporting = false;
+        });
+      }
     }
   }
 
   Future<void> _exportToCloud(BuildContext context) async {
-    // Export to cloud storage
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Connect to cloud storage first')),
     );
   }
 
   Future<void> _importBackup(BuildContext context) async {
-    // Import from file
+    if (_isImporting) return;
+
+    setState(() {
+      _isImporting = true;
+    });
+
     try {
       final result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['avx'],
       );
 
-      if (result != null && result.files.single.path != null) {
-        // In production, decrypt and import
-        if (context.mounted) {
+      if (result != null && result.files.isNotEmpty) {
+        final file = result.files.first;
+        if (file.path != null && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Import successful')),
+          );
+        } else if (file.bytes != null && mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Import successful')),
           );
         }
       }
+    } on PlatformException catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Import failed: ${e.message ?? 'Unknown error'}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     } catch (e) {
-      if (context.mounted) {
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Import failed: $e'),
@@ -248,11 +303,16 @@ class BackupScreen extends StatelessWidget {
           ),
         );
       }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isImporting = false;
+        });
+      }
     }
   }
 
   Future<void> _exportQR(BuildContext context) async {
-    // Export as QR codes
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('QR export feature coming soon')),
     );

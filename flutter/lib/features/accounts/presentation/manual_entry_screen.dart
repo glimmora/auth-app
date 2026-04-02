@@ -1,3 +1,7 @@
+import 'dart:math';
+
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -98,10 +102,10 @@ class _ManualEntryScreenState extends ConsumerState<ManualEntryScreen> {
 
   String _generateRandomBase32(int length) {
     const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
-    final random = DateTime.now().microsecondsSinceEpoch;
+    final random = Random.secure();
     return List.generate(
       length,
-      (i) => alphabet[(random + i) % alphabet.length],
+      (_) => alphabet[random.nextInt(alphabet.length)],
     ).join();
   }
 

@@ -1,9 +1,19 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 
-/// Add account screen - choose method
-class AddAccountScreen extends StatelessWidget {
+class AddAccountScreen extends StatefulWidget {
   const AddAccountScreen({super.key});
+
+  @override
+  State<AddAccountScreen> createState() => _AddAccountScreenState();
+}
+
+class _AddAccountScreenState extends State<AddAccountScreen> {
+  bool _isProcessing = false;
 
   @override
   Widget build(BuildContext context) {
@@ -17,8 +27,6 @@ class AddAccountScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const SizedBox(height: 24),
-
-            // Scan QR option
             Card(
               child: ListTile(
                 leading: const Icon(Icons.qr_code_scanner, size: 40),
@@ -28,25 +36,17 @@ class AddAccountScreen extends StatelessWidget {
                 onTap: () => context.push('/account/add/scan'),
               ),
             ),
-
             const SizedBox(height: 16),
-
-            // Image import option
             Card(
               child: ListTile(
                 leading: const Icon(Icons.image, size: 40),
                 title: const Text('Import from Image'),
                 subtitle: const Text('Select an image with QR code'),
                 trailing: const Icon(Icons.chevron_right),
-                onTap: () {
-                  // Open image picker
-                },
+                onTap: _isProcessing ? null : _importFromImage,
               ),
             ),
-
             const SizedBox(height: 16),
-
-            // Manual entry option
             Card(
               child: ListTile(
                 leading: const Icon(Icons.edit, size: 40),
@@ -56,10 +56,7 @@ class AddAccountScreen extends StatelessWidget {
                 onTap: () => context.push('/account/add/manual'),
               ),
             ),
-
             const Spacer(),
-
-            // Help text
             Text(
               'You can add accounts from any service that supports TOTP or HOTP, including Google, GitHub, Microsoft, and more.',
               style: TextStyle(color: Colors.grey[500]),
@@ -68,6 +65,87 @@ class AddAccountScreen extends StatelessWidget {
           ],
         ),
       ),
+      if (_isProcessing)
+        const Stack(
+          children: [
+            ModalBarrier(dismissible: false, color: Colors.black26),
+            Center(child: CircularProgressIndicator()),
+          ],
+        ),
     );
+  }
+
+  Future<void> _importFromImage() async {
+    try {
+      final picker = ImagePicker();
+      final image = await picker.pickImage(source: ImageSource.gallery);
+
+      if (image == null || !mounted) return;
+
+      setState(() {
+        _isProcessing = true;
+      });
+
+      final barcodeCapture = await BarcodeAnalyzer().analyze(image);
+
+      if (!mounted) return;
+
+      if (barcodeCapture != null && barcodeCapture.barcodes.isNotEmpty) {
+        final barcode = barcodeCapture.barcodes.first;
+        final rawValue = barcode.rawValue;
+        if (rawValue != null && rawValue.startsWith('otpauth://')) {
+          if (mounted) {
+            context.pop(rawValue);
+          }
+        } else {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('No valid otpauth:// QR code found in image'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('No QR code detected in image'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to import: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isProcessing = false;
+        });
+      }
+    }
+  }
+}
+
+class BarcodeAnalyzer {
+  Future<BarcodeCapture?> analyze(XFile image) async {
+    final controller = MobileScannerController();
+    try {
+      final file = File(image.path);
+      final bytes = await file.readAsBytes();
+      final barcodeCapture = await controller.analyzeImage(bytes);
+      return barcodeCapture;
+    } finally {
+      controller.dispose();
+    }
   }
 }

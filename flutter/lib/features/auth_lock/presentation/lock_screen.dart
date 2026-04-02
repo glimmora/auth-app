@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
@@ -10,7 +11,6 @@ import 'package:local_auth/local_auth.dart';
 
 import '../../../core/providers/providers.dart';
 
-/// Lock screen - PIN and biometric authentication
 class LockScreen extends ConsumerStatefulWidget {
   const LockScreen({super.key});
 
@@ -22,6 +22,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
   final _pinController = TextEditingController(text: '');
   final _focusNode = FocusNode();
   bool _showError = false;
+  String _errorMessage = '';
   int _failedAttempts = 0;
   bool _isLockedOut = false;
   int _lockoutSeconds = 0;
@@ -29,7 +30,6 @@ class _LockScreenState extends ConsumerState<LockScreen> {
 
   final LocalAuthentication _localAuth = LocalAuthentication();
   bool _canCheckBiometrics = false;
-  bool _hasBiometrics = false;
   bool _hasBiometricsEnrolled = false;
 
   @override
@@ -41,18 +41,27 @@ class _LockScreenState extends ConsumerState<LockScreen> {
 
   Future<void> _checkBiometrics() async {
     try {
-      _canCheckBiometrics = await _localAuth.canCheckBiometrics;
-      if (_canCheckBiometrics) {
-        _hasBiometrics = await _localAuth.isDeviceSupported();
-        _hasBiometricsEnrolled = await _localAuth.canCheckBiometrics;
+      final canCheck = await _localAuth.canCheckBiometrics;
+      if (canCheck && mounted) {
+        final isDeviceSupported = await _localAuth.isDeviceSupported();
+        if (mounted) {
+          setState(() {
+            _canCheckBiometrics = canCheck && isDeviceSupported;
+            _hasBiometricsEnrolled = canCheck;
+          });
+        }
       }
     } catch (e) {
-      _canCheckBiometrics = false;
+      if (mounted) {
+        setState(() {
+          _canCheckBiometrics = false;
+        });
+      }
     }
   }
 
   Future<void> _authenticateWithBiometrics() async {
-    if (_isAuthenticating) return;
+    if (_isAuthenticating || _isLockedOut) return;
 
     setState(() {
       _isAuthenticating = true;
@@ -79,7 +88,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
       if (mounted) {
         setState(() {
           _showError = true;
-          _errorMessage = 'Biometric error: $e';
+          _errorMessage = 'Biometric authentication failed';
         });
       }
     } finally {
@@ -90,8 +99,6 @@ class _LockScreenState extends ConsumerState<LockScreen> {
       }
     }
   }
-
-  String _errorMessage = '';
 
   void _handlePinSubmit() async {
     final pin = _pinController.text;
@@ -115,7 +122,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
         throw Exception('PIN not set');
       }
       final hash = _hashPin(pin, settings.pinSalt!);
-      
+
       if (hash == settings.pinHash) {
         await _unlock();
       } else {
@@ -131,23 +138,26 @@ class _LockScreenState extends ConsumerState<LockScreen> {
         _startLockoutTimer();
       }
 
-      setState(() {
-        _isAuthenticating = false;
-        _showError = true;
-        _errorMessage = 'Incorrect PIN. $_failedAttempts attempts.';
-      });
+      if (mounted) {
+        setState(() {
+          _isAuthenticating = false;
+          _showError = true;
+          _errorMessage = 'Incorrect PIN. $_failedAttempts attempts.';
+        });
+      }
     }
   }
 
   Future<void> _unlock() async {
-    // Log audit event
-    final db = ref.read(databaseProvider);
-    await db.logAction('UNLOCK', details: 'PIN authentication successful');
+    try {
+      final db = ref.read(databaseProvider);
+      await db.logAction('UNLOCK', details: 'PIN authentication successful');
+    } catch (e) {
+      // Continue even if audit logging fails
+    }
 
-    // Reset failed attempts
     _failedAttempts = 0;
 
-    // Navigate to home
     if (mounted) {
       context.go('/home');
     }
@@ -183,16 +193,12 @@ class _LockScreenState extends ConsumerState<LockScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // App icon
               const Icon(
                 Icons.security,
                 size: 80,
                 color: Colors.white,
               ),
-
               const SizedBox(height: 32),
-
-              // Title
               const Text(
                 'AuthVault',
                 style: TextStyle(
@@ -201,9 +207,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
                   color: Colors.white,
                 ),
               ),
-
               const SizedBox(height: 8),
-
               Text(
                 'Enter your PIN to unlock',
                 style: TextStyle(
@@ -211,10 +215,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
                   color: Colors.grey[400],
                 ),
               ),
-
               const SizedBox(height: 48),
-
-              // Error message
               if (_showError)
                 Container(
                   padding: const EdgeInsets.all(12),
@@ -235,8 +236,6 @@ class _LockScreenState extends ConsumerState<LockScreen> {
                     ],
                   ),
                 ),
-
-              // Lockout message
               if (_isLockedOut)
                 Container(
                   padding: const EdgeInsets.all(12),
@@ -257,10 +256,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
                     ],
                   ),
                 ),
-
               const SizedBox(height: 24),
-
-              // PIN input
               if (!_isLockedOut)
                 TextField(
                   controller: _pinController,
@@ -303,10 +299,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
                     FilteringTextInputFormatter.digitsOnly,
                   ],
                 ),
-
               const SizedBox(height: 24),
-
-              // Submit button
               if (!_isLockedOut)
                 SizedBox(
                   width: double.infinity,
@@ -330,10 +323,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
                           ),
                   ),
                 ),
-
               const SizedBox(height: 16),
-
-              // Biometric button
               if (biometricEnabled && !_isLockedOut && !_isAuthenticating)
                 SizedBox(
                   width: double.infinity,
@@ -355,21 +345,16 @@ class _LockScreenState extends ConsumerState<LockScreen> {
                     ),
                   ),
                 ),
-
               const Spacer(),
-
-              // Forgot PIN
               TextButton(
-                onPressed: () {
-                  _showResetDialog();
-                },
+                onPressed: _isLockedOut ? null : _showResetDialog,
                 child: Text(
                   'Forgot PIN?',
-                  style: TextStyle(color: Colors.grey[500]),
+                  style: TextStyle(
+                    color: _isLockedOut ? Colors.grey[700] : Colors.grey[500],
+                  ),
                 ),
               ),
-
-              // Bottom padding for navigation bar
               const SizedBox(height: 16),
             ],
           ),
@@ -379,23 +364,22 @@ class _LockScreenState extends ConsumerState<LockScreen> {
   }
 
   void _showResetDialog() {
+    if (!mounted) return;
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: const Text('Reset PIN'),
         content: const Text(
           'If you forgot your PIN, you\'ll need to reset the app. This will delete all accounts. Make sure you have a backup!',
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(dialogContext),
             child: const Text('Cancel'),
           ),
           ElevatedButton(
             onPressed: () {
-              // Reset app
-              Navigator.pop(context);
-              // Clear all data and redirect to setup
+              Navigator.pop(dialogContext);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
