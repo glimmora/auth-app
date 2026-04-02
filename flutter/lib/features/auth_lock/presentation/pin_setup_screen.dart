@@ -46,20 +46,51 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
     });
 
     try {
-      // Save PIN (hashed)
       await ref.read(settingsProvider.notifier).setPin(pin);
       ref.read(lockStateProvider.notifier).setUnlocked();
       
-      // Navigate to home
       if (mounted) {
         context.go('/home');
       }
     } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isSubmitting = false;
+          _showError = true;
+          _errorMessage = 'Failed to set PIN: $e';
+        });
+      }
+    }
+  }
+
+    if (pin != confirm) {
       setState(() {
-        _isSubmitting = false;
         _showError = true;
-        _errorMessage = 'Failed to set PIN: $e';
+        _errorMessage = 'PINs do not match';
       });
+      return;
+    }
+
+    setState(() {
+      _isSubmitting = true;
+      _showError = false;
+    });
+
+    try {
+      await ref.read(settingsProvider.notifier).setPin(pin);
+      ref.read(lockStateProvider.notifier).setUnlocked();
+      
+      if (mounted) {
+        context.go('/home');
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isSubmitting = false;
+          _showError = true;
+          _errorMessage = 'Failed to set PIN: $e';
+        });
+      }
     }
   }
 

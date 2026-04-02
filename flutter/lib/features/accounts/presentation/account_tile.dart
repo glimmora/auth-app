@@ -161,7 +161,9 @@ class _AccountTileState extends ConsumerState<AccountTile> {
         radius: 24,
         backgroundColor: Colors.grey[700],
         child: Text(
-          widget.account.issuer[0].toUpperCase(),
+          widget.account.issuer.isNotEmpty
+              ? widget.account.issuer[0].toUpperCase()
+              : '?',
           style:
               const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),

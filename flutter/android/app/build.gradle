@@ -66,7 +66,7 @@ android {
 
     defaultConfig {
         applicationId "app.authvault.android"
-        minSdkVersion flutter.minSdkVersion // Android 6.0
+        minSdkVersion 26
         targetSdk 35
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName

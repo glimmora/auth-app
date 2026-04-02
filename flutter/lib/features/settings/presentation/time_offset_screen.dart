@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// Time offset settings screen
-///
-/// Allows users to adjust TOTP/HOTP time offset for clock drift
+import '../../../core/providers/providers.dart';
+
 class TimeOffsetScreen extends ConsumerStatefulWidget {
   const TimeOffsetScreen({super.key});
 
@@ -23,10 +22,16 @@ class _TimeOffsetScreenState extends ConsumerState<TimeOffsetScreen> {
   }
 
   Future<void> _loadCurrentOffset() async {
-    // Load from settings
-    setState(() {
-      _currentOffset = 0; // Placeholder
-    });
+    try {
+      final settings = ref.read(settingsProvider);
+      if (mounted) {
+        setState(() {
+          _currentOffset = settings.globalTimeOffset;
+        });
+      }
+    } catch (e) {
+      debugPrint('Failed to load time offset: $e');
+    }
   }
 
   Future<void> _measureNTPDrift() async {
@@ -34,40 +39,77 @@ class _TimeOffsetScreenState extends ConsumerState<TimeOffsetScreen> {
       _isMeasuring = true;
     });
 
-    // Simulate NTP measurement
-    await Future.delayed(const Duration(seconds: 2));
-
-    setState(() {
-      _suggestedOffset = 12; // Example suggested offset
-      _isMeasuring = false;
-    });
+    try {
+      await Future.delayed(const Duration(seconds: 2));
+      if (mounted) {
+        setState(() {
+          _suggestedOffset = 12;
+          _isMeasuring = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isMeasuring = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to measure NTP drift: $e')),
+        );
+      }
+    }
   }
 
-  void _applyOffset(int offset) {
-    setState(() {
-      _currentOffset = offset;
-    });
-
-    // Save to settings
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Time offset set to ${offset > 0 ? '+' : ''}${offset}s'),
-        duration: const Duration(seconds: 2),
-      ),
-    );
+  Future<void> _applyOffset(int offset) async {
+    try {
+      await ref.read(settingsProvider.notifier).setGlobalTimeOffset(offset);
+      if (mounted) {
+        setState(() {
+          _currentOffset = offset;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Time offset set to ${offset > 0 ? '+' : ''}${offset}s'),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to apply offset: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
-  void _resetOffset() {
-    setState(() {
-      _currentOffset = 0;
-    });
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Time offset reset to 0s'),
-        duration: Duration(seconds: 2),
-      ),
-    );
+  Future<void> _resetOffset() async {
+    try {
+      await ref.read(settingsProvider.notifier).setGlobalTimeOffset(0);
+      if (mounted) {
+        setState(() {
+          _currentOffset = 0;
+          _suggestedOffset = 0;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Time offset reset to 0s'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to reset offset: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -81,7 +123,6 @@ class _TimeOffsetScreenState extends ConsumerState<TimeOffsetScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Warning banner if offset is active
             if (_currentOffset != 0)
               Container(
                 padding: const EdgeInsets.all(16),
@@ -105,7 +146,6 @@ class _TimeOffsetScreenState extends ConsumerState<TimeOffsetScreen> {
 
             if (_currentOffset != 0) const SizedBox(height: 24),
 
-            // Slider
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -119,7 +159,6 @@ class _TimeOffsetScreenState extends ConsumerState<TimeOffsetScreen> {
 
                     const SizedBox(height: 24),
 
-                    // Slider
                     Slider(
                       value: _currentOffset.toDouble(),
                       min: -300,
@@ -154,7 +193,6 @@ class _TimeOffsetScreenState extends ConsumerState<TimeOffsetScreen> {
 
                     const SizedBox(height: 24),
 
-                    // Fine adjustment buttons
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -196,7 +234,6 @@ class _TimeOffsetScreenState extends ConsumerState<TimeOffsetScreen> {
 
             const SizedBox(height: 24),
 
-            // NTP drift measurement
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -259,7 +296,6 @@ class _TimeOffsetScreenState extends ConsumerState<TimeOffsetScreen> {
 
             const SizedBox(height: 24),
 
-            // Preview section
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -313,7 +349,6 @@ class _TimeOffsetScreenState extends ConsumerState<TimeOffsetScreen> {
 
             const SizedBox(height: 24),
 
-            // Action buttons
             Row(
               children: [
                 Expanded(
