@@ -99,8 +99,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   }
                 }
                 await ref.read(settingsProvider.notifier).setPin(newPin);
-                Navigator.pop(dialogContext);
                 if (!mounted) return;
+                Navigator.pop(dialogContext);
                 ScaffoldMessenger.of(this.context).showSnackBar(
                   const SnackBar(content: Text('PIN changed successfully')),
                 );
