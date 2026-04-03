@@ -17,6 +17,7 @@ add_executable(authvault_tests
     test_main.cpp
     ../src/totp_engine.cpp
     ../src/base32.cpp
+    ../src/encryption_engine.cpp
 )
 
 target_include_directories(authvault_tests PRIVATE ${CMAKE_SOURCE_DIR}/..)

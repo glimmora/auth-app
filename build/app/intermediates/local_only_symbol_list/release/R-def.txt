@@ -3,6 +3,13 @@ local
 color colorAccent
 color colorPrimary
 color colorPrimaryDark
+id progressCircular
+id tvCode
+id tvIssuer
+id tvLabel
+id tvTimer
 layout activity_main
+layout item_account
 mipmap ic_launcher
+string app_name
 style AppTheme

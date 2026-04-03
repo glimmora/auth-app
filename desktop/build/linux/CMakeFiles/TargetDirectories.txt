@@ -1,0 +1,7 @@
+/home/blue/projects/auth-app/desktop/build/linux/CMakeFiles/authvault.dir
+/home/blue/projects/auth-app/desktop/build/linux/CMakeFiles/edit_cache.dir
+/home/blue/projects/auth-app/desktop/build/linux/CMakeFiles/rebuild_cache.dir
+/home/blue/projects/auth-app/desktop/build/linux/CMakeFiles/list_install_components.dir
+/home/blue/projects/auth-app/desktop/build/linux/CMakeFiles/install.dir
+/home/blue/projects/auth-app/desktop/build/linux/CMakeFiles/install/local.dir
+/home/blue/projects/auth-app/desktop/build/linux/CMakeFiles/install/strip.dir

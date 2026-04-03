@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.authvault.authapp-mergeReleaseResources-31:/values-en-rGB/values-en-rGB.xml",
+            "outputFile": "com.authvault.authapp-mergeReleaseResources-32:/values-en-rGB/values-en-rGB.xml",
             "map": [
                 {
                     "source": "/home/blue/.gradle/caches/transforms-3/8039814683e99273639282182313ac7d/transformed/appcompat-1.6.1/res/values-en-rGB/values-en-rGB.xml",

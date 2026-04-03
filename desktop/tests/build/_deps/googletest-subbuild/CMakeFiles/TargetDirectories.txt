@@ -1,0 +1,3 @@
+/home/dev/vscode-projects/blue/projects/auth-app/desktop/tests/build/_deps/googletest-subbuild/CMakeFiles/googletest-populate.dir
+/home/dev/vscode-projects/blue/projects/auth-app/desktop/tests/build/_deps/googletest-subbuild/CMakeFiles/edit_cache.dir
+/home/dev/vscode-projects/blue/projects/auth-app/desktop/tests/build/_deps/googletest-subbuild/CMakeFiles/rebuild_cache.dir

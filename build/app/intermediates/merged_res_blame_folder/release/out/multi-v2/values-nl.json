@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.authvault.authapp-mergeReleaseResources-31:/values-nl/values-nl.xml",
+            "outputFile": "com.authvault.authapp-mergeReleaseResources-32:/values-nl/values-nl.xml",
             "map": [
                 {
                     "source": "/home/blue/.gradle/caches/transforms-3/a55c55b9d973de023482f90f276923dc/transformed/core-1.12.0/res/values-nl/values-nl.xml",

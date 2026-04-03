@@ -1,10 +1,14 @@
 [
     {
-        "merged": "com.authvault.authapp-merged_res-33:/mipmap_ic_launcher.xml.flat",
-        "source": "com.authvault.authapp-main-27:/mipmap/ic_launcher.xml"
+        "merged": "com.authvault.authapp-merged_res-34:/mipmap_ic_launcher.xml.flat",
+        "source": "com.authvault.authapp-main-28:/mipmap/ic_launcher.xml"
     },
     {
-        "merged": "com.authvault.authapp-merged_res-33:/layout_activity_main.xml.flat",
-        "source": "com.authvault.authapp-main-27:/layout/activity_main.xml"
+        "merged": "com.authvault.authapp-merged_res-34:/layout_activity_main.xml.flat",
+        "source": "com.authvault.authapp-main-28:/layout/activity_main.xml"
+    },
+    {
+        "merged": "com.authvault.authapp-merged_res-34:/layout_item_account.xml.flat",
+        "source": "com.authvault.authapp-main-28:/layout/item_account.xml"
     }
 ]

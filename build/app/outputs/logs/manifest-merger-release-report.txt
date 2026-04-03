@@ -4,13 +4,16 @@ ADDED from /home/dev/vscode-projects/blue/projects/auth-app/android/app/src/main
 INJECTED from /home/dev/vscode-projects/blue/projects/auth-app/android/app/src/main/AndroidManifest.xml:2:1-21:12
 INJECTED from /home/dev/vscode-projects/blue/projects/auth-app/android/app/src/main/AndroidManifest.xml:2:1-21:12
 INJECTED from /home/dev/vscode-projects/blue/projects/auth-app/android/app/src/main/AndroidManifest.xml:2:1-21:12
+MERGED from [androidx.databinding:viewbinding:8.2.0] /home/blue/.gradle/caches/transforms-3/57e623d5e474d386890d9a3f165b9529/transformed/jetified-viewbinding-8.2.0/AndroidManifest.xml:2:1-7:12
 MERGED from [com.google.android.material:material:1.11.0] /home/blue/.gradle/caches/transforms-3/5b1dbbf226423ab92db46aaa9f0b37a6/transformed/material-1.11.0/AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] /home/blue/.gradle/caches/transforms-3/bbec17b730998a7043bd3fcbc3ffac34/transformed/constraintlayout-2.1.4/AndroidManifest.xml:2:1-11:12
 MERGED from [androidx.appcompat:appcompat-resources:1.6.1] /home/blue/.gradle/caches/transforms-3/2102699234aa3c47f3b636b85ea00aaa/transformed/jetified-appcompat-resources-1.6.1/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.appcompat:appcompat:1.6.1] /home/blue/.gradle/caches/transforms-3/8039814683e99273639282182313ac7d/transformed/appcompat-1.6.1/AndroidManifest.xml:17:1-22:12
-MERGED from [androidx.viewpager2:viewpager2:1.0.0] /home/blue/.gradle/caches/transforms-3/487489d53ad359282284962788734259/transformed/jetified-viewpager2-1.0.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.recyclerview:recyclerview:1.3.2] /home/blue/.gradle/caches/transforms-3/67142e5161c0f2e259c183503e141b41/transformed/recyclerview-1.3.2/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.viewpager2:viewpager2:1.1.0-beta02] /home/blue/.gradle/caches/transforms-3/39910ee2a061507126149defdedfc4bd/transformed/jetified-viewpager2-1.1.0-beta02/AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.fragment:fragment:1.3.6] /home/blue/.gradle/caches/transforms-3/a84f753ac0459791f79939a04e17b9ca/transformed/fragment-1.3.6/AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.activity:activity:1.8.0] /home/blue/.gradle/caches/transforms-3/d6b29d3e40f05d0e6d642b7ea941cc91/transformed/jetified-activity-1.8.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.customview:customview-poolingcontainer:1.0.0] /home/blue/.gradle/caches/transforms-3/f7c93e5c56abcde7539b5e57a804e0e2/transformed/jetified-customview-poolingcontainer-1.0.0/AndroidManifest.xml:17:1-23:12
 MERGED from [androidx.core:core-ktx:1.12.0] /home/blue/.gradle/caches/transforms-3/6f0bcb58fd36ad27ae99bf4c9616e745/transformed/jetified-core-ktx-1.12.0/AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.emoji2:emoji2-views-helper:1.2.0] /home/blue/.gradle/caches/transforms-3/23ad41e948a44f06e424509897e9d3cb/transformed/jetified-emoji2-views-helper-1.2.0/AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.emoji2:emoji2:1.2.0] /home/blue/.gradle/caches/transforms-3/101c69e0ca1043b8a0043474c44a20a6/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:17:1-35:12
@@ -23,7 +26,6 @@ MERGED from [androidx.vectordrawable:vectordrawable:1.1.0] /home/blue/.gradle/ca
 MERGED from [androidx.viewpager:viewpager:1.0.0] /home/blue/.gradle/caches/transforms-3/b311df3e1812344e58c6607e27fe01ec/transformed/viewpager-1.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.legacy:legacy-support-core-utils:1.0.0] /home/blue/.gradle/caches/transforms-3/28f77316cbeecf21e405b467611d6618/transformed/legacy-support-core-utils-1.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.loader:loader:1.0.0] /home/blue/.gradle/caches/transforms-3/c27fe34be603f388cc689da290254284/transformed/loader-1.0.0/AndroidManifest.xml:17:1-22:12
-MERGED from [androidx.recyclerview:recyclerview:1.1.0] /home/blue/.gradle/caches/transforms-3/b9e3bb926d0fcc75aa8f5774231fd493/transformed/recyclerview-1.1.0/AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.customview:customview:1.1.0] /home/blue/.gradle/caches/transforms-3/c73dbde6949eb82611f8ed46bcff12af/transformed/customview-1.1.0/AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.core:core:1.12.0] /home/blue/.gradle/caches/transforms-3/a55c55b9d973de023482f90f276923dc/transformed/core-1.12.0/AndroidManifest.xml:17:1-30:12
 MERGED from [androidx.savedstate:savedstate:1.2.1] /home/blue/.gradle/caches/transforms-3/efd8a5878f5cf222ddd259b9eb1f412a/transformed/jetified-savedstate-1.2.1/AndroidManifest.xml:17:1-22:12
@@ -33,7 +35,6 @@ MERGED from [androidx.lifecycle:lifecycle-livedata:2.6.1] /home/blue/.gradle/cac
 MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.6.1] /home/blue/.gradle/caches/transforms-3/509f1d9a4b041db7f48e409036ad745d/transformed/lifecycle-viewmodel-2.6.1/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.lifecycle:lifecycle-runtime:2.6.1] /home/blue/.gradle/caches/transforms-3/24f09d5e22316147a1d9158a57ca472f/transformed/lifecycle-runtime-2.6.1/AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.1] /home/blue/.gradle/caches/transforms-3/8b53efc5f1c77fe6c348f27354b22f53/transformed/jetified-lifecycle-viewmodel-savedstate-2.6.1/AndroidManifest.xml:17:1-22:12
-MERGED from [androidx.annotation:annotation-experimental:1.3.0] /home/blue/.gradle/caches/transforms-3/336f423e7e370d25ed03d812bb9a0393/transformed/jetified-annotation-experimental-1.3.0/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] /home/blue/.gradle/caches/transforms-3/dc11702b87c84c7b33069ceb7d9edb6e/transformed/cursoradapter-1.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.cardview:cardview:1.0.0] /home/blue/.gradle/caches/transforms-3/fc76826196d3c6956eb614ea1c948deb/transformed/cardview-1.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.interpolator:interpolator:1.0.0] /home/blue/.gradle/caches/transforms-3/71d58293af1cc9a1c9073edc66d9f28d/transformed/interpolator-1.0.0/AndroidManifest.xml:17:1-22:12
@@ -45,6 +46,7 @@ MERGED from [androidx.arch.core:core-runtime:2.2.0] /home/blue/.gradle/caches/tr
 MERGED from [androidx.documentfile:documentfile:1.0.0] /home/blue/.gradle/caches/transforms-3/4b16cecc8192a1c002f6d314c72a5504/transformed/documentfile-1.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] /home/blue/.gradle/caches/transforms-3/93ab44da923752b971729f9842c44138/transformed/localbroadcastmanager-1.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.print:print:1.0.0] /home/blue/.gradle/caches/transforms-3/8cd13e824ef38bb1e906e9629e87d938/transformed/print-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.annotation:annotation-experimental:1.3.0] /home/blue/.gradle/caches/transforms-3/336f423e7e370d25ed03d812bb9a0393/transformed/jetified-annotation-experimental-1.3.0/AndroidManifest.xml:17:1-22:12
 	package
 		INJECTED from /home/dev/vscode-projects/blue/projects/auth-app/android/app/src/main/AndroidManifest.xml
 	android:versionName
@@ -108,6 +110,8 @@ uses-sdk
 INJECTED from /home/dev/vscode-projects/blue/projects/auth-app/android/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from /home/dev/vscode-projects/blue/projects/auth-app/android/app/src/main/AndroidManifest.xml
 INJECTED from /home/dev/vscode-projects/blue/projects/auth-app/android/app/src/main/AndroidManifest.xml
+MERGED from [androidx.databinding:viewbinding:8.2.0] /home/blue/.gradle/caches/transforms-3/57e623d5e474d386890d9a3f165b9529/transformed/jetified-viewbinding-8.2.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.databinding:viewbinding:8.2.0] /home/blue/.gradle/caches/transforms-3/57e623d5e474d386890d9a3f165b9529/transformed/jetified-viewbinding-8.2.0/AndroidManifest.xml:5:5-44
 MERGED from [com.google.android.material:material:1.11.0] /home/blue/.gradle/caches/transforms-3/5b1dbbf226423ab92db46aaa9f0b37a6/transformed/material-1.11.0/AndroidManifest.xml:20:5-44
 MERGED from [com.google.android.material:material:1.11.0] /home/blue/.gradle/caches/transforms-3/5b1dbbf226423ab92db46aaa9f0b37a6/transformed/material-1.11.0/AndroidManifest.xml:20:5-44
 MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] /home/blue/.gradle/caches/transforms-3/bbec17b730998a7043bd3fcbc3ffac34/transformed/constraintlayout-2.1.4/AndroidManifest.xml:5:5-7:41
@@ -116,12 +120,16 @@ MERGED from [androidx.appcompat:appcompat-resources:1.6.1] /home/blue/.gradle/ca
 MERGED from [androidx.appcompat:appcompat-resources:1.6.1] /home/blue/.gradle/caches/transforms-3/2102699234aa3c47f3b636b85ea00aaa/transformed/jetified-appcompat-resources-1.6.1/AndroidManifest.xml:20:5-44
 MERGED from [androidx.appcompat:appcompat:1.6.1] /home/blue/.gradle/caches/transforms-3/8039814683e99273639282182313ac7d/transformed/appcompat-1.6.1/AndroidManifest.xml:20:5-44
 MERGED from [androidx.appcompat:appcompat:1.6.1] /home/blue/.gradle/caches/transforms-3/8039814683e99273639282182313ac7d/transformed/appcompat-1.6.1/AndroidManifest.xml:20:5-44
-MERGED from [androidx.viewpager2:viewpager2:1.0.0] /home/blue/.gradle/caches/transforms-3/487489d53ad359282284962788734259/transformed/jetified-viewpager2-1.0.0/AndroidManifest.xml:20:5-22:41
-MERGED from [androidx.viewpager2:viewpager2:1.0.0] /home/blue/.gradle/caches/transforms-3/487489d53ad359282284962788734259/transformed/jetified-viewpager2-1.0.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.recyclerview:recyclerview:1.3.2] /home/blue/.gradle/caches/transforms-3/67142e5161c0f2e259c183503e141b41/transformed/recyclerview-1.3.2/AndroidManifest.xml:20:5-44
+MERGED from [androidx.recyclerview:recyclerview:1.3.2] /home/blue/.gradle/caches/transforms-3/67142e5161c0f2e259c183503e141b41/transformed/recyclerview-1.3.2/AndroidManifest.xml:20:5-44
+MERGED from [androidx.viewpager2:viewpager2:1.1.0-beta02] /home/blue/.gradle/caches/transforms-3/39910ee2a061507126149defdedfc4bd/transformed/jetified-viewpager2-1.1.0-beta02/AndroidManifest.xml:5:5-44
+MERGED from [androidx.viewpager2:viewpager2:1.1.0-beta02] /home/blue/.gradle/caches/transforms-3/39910ee2a061507126149defdedfc4bd/transformed/jetified-viewpager2-1.1.0-beta02/AndroidManifest.xml:5:5-44
 MERGED from [androidx.fragment:fragment:1.3.6] /home/blue/.gradle/caches/transforms-3/a84f753ac0459791f79939a04e17b9ca/transformed/fragment-1.3.6/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.fragment:fragment:1.3.6] /home/blue/.gradle/caches/transforms-3/a84f753ac0459791f79939a04e17b9ca/transformed/fragment-1.3.6/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.activity:activity:1.8.0] /home/blue/.gradle/caches/transforms-3/d6b29d3e40f05d0e6d642b7ea941cc91/transformed/jetified-activity-1.8.0/AndroidManifest.xml:20:5-44
 MERGED from [androidx.activity:activity:1.8.0] /home/blue/.gradle/caches/transforms-3/d6b29d3e40f05d0e6d642b7ea941cc91/transformed/jetified-activity-1.8.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.customview:customview-poolingcontainer:1.0.0] /home/blue/.gradle/caches/transforms-3/f7c93e5c56abcde7539b5e57a804e0e2/transformed/jetified-customview-poolingcontainer-1.0.0/AndroidManifest.xml:20:5-21:38
+MERGED from [androidx.customview:customview-poolingcontainer:1.0.0] /home/blue/.gradle/caches/transforms-3/f7c93e5c56abcde7539b5e57a804e0e2/transformed/jetified-customview-poolingcontainer-1.0.0/AndroidManifest.xml:20:5-21:38
 MERGED from [androidx.core:core-ktx:1.12.0] /home/blue/.gradle/caches/transforms-3/6f0bcb58fd36ad27ae99bf4c9616e745/transformed/jetified-core-ktx-1.12.0/AndroidManifest.xml:5:5-44
 MERGED from [androidx.core:core-ktx:1.12.0] /home/blue/.gradle/caches/transforms-3/6f0bcb58fd36ad27ae99bf4c9616e745/transformed/jetified-core-ktx-1.12.0/AndroidManifest.xml:5:5-44
 MERGED from [androidx.emoji2:emoji2-views-helper:1.2.0] /home/blue/.gradle/caches/transforms-3/23ad41e948a44f06e424509897e9d3cb/transformed/jetified-emoji2-views-helper-1.2.0/AndroidManifest.xml:5:5-44
@@ -146,8 +154,6 @@ MERGED from [androidx.legacy:legacy-support-core-utils:1.0.0] /home/blue/.gradle
 MERGED from [androidx.legacy:legacy-support-core-utils:1.0.0] /home/blue/.gradle/caches/transforms-3/28f77316cbeecf21e405b467611d6618/transformed/legacy-support-core-utils-1.0.0/AndroidManifest.xml:20:5-44
 MERGED from [androidx.loader:loader:1.0.0] /home/blue/.gradle/caches/transforms-3/c27fe34be603f388cc689da290254284/transformed/loader-1.0.0/AndroidManifest.xml:20:5-44
 MERGED from [androidx.loader:loader:1.0.0] /home/blue/.gradle/caches/transforms-3/c27fe34be603f388cc689da290254284/transformed/loader-1.0.0/AndroidManifest.xml:20:5-44
-MERGED from [androidx.recyclerview:recyclerview:1.1.0] /home/blue/.gradle/caches/transforms-3/b9e3bb926d0fcc75aa8f5774231fd493/transformed/recyclerview-1.1.0/AndroidManifest.xml:20:5-22:41
-MERGED from [androidx.recyclerview:recyclerview:1.1.0] /home/blue/.gradle/caches/transforms-3/b9e3bb926d0fcc75aa8f5774231fd493/transformed/recyclerview-1.1.0/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.customview:customview:1.1.0] /home/blue/.gradle/caches/transforms-3/c73dbde6949eb82611f8ed46bcff12af/transformed/customview-1.1.0/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.customview:customview:1.1.0] /home/blue/.gradle/caches/transforms-3/c73dbde6949eb82611f8ed46bcff12af/transformed/customview-1.1.0/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.core:core:1.12.0] /home/blue/.gradle/caches/transforms-3/a55c55b9d973de023482f90f276923dc/transformed/core-1.12.0/AndroidManifest.xml:20:5-44
@@ -166,8 +172,6 @@ MERGED from [androidx.lifecycle:lifecycle-runtime:2.6.1] /home/blue/.gradle/cach
 MERGED from [androidx.lifecycle:lifecycle-runtime:2.6.1] /home/blue/.gradle/caches/transforms-3/24f09d5e22316147a1d9158a57ca472f/transformed/lifecycle-runtime-2.6.1/AndroidManifest.xml:5:5-44
 MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.1] /home/blue/.gradle/caches/transforms-3/8b53efc5f1c77fe6c348f27354b22f53/transformed/jetified-lifecycle-viewmodel-savedstate-2.6.1/AndroidManifest.xml:20:5-44
 MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.1] /home/blue/.gradle/caches/transforms-3/8b53efc5f1c77fe6c348f27354b22f53/transformed/jetified-lifecycle-viewmodel-savedstate-2.6.1/AndroidManifest.xml:20:5-44
-MERGED from [androidx.annotation:annotation-experimental:1.3.0] /home/blue/.gradle/caches/transforms-3/336f423e7e370d25ed03d812bb9a0393/transformed/jetified-annotation-experimental-1.3.0/AndroidManifest.xml:20:5-44
-MERGED from [androidx.annotation:annotation-experimental:1.3.0] /home/blue/.gradle/caches/transforms-3/336f423e7e370d25ed03d812bb9a0393/transformed/jetified-annotation-experimental-1.3.0/AndroidManifest.xml:20:5-44
 MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] /home/blue/.gradle/caches/transforms-3/dc11702b87c84c7b33069ceb7d9edb6e/transformed/cursoradapter-1.0.0/AndroidManifest.xml:20:5-44
 MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] /home/blue/.gradle/caches/transforms-3/dc11702b87c84c7b33069ceb7d9edb6e/transformed/cursoradapter-1.0.0/AndroidManifest.xml:20:5-44
 MERGED from [androidx.cardview:cardview:1.0.0] /home/blue/.gradle/caches/transforms-3/fc76826196d3c6956eb614ea1c948deb/transformed/cardview-1.0.0/AndroidManifest.xml:20:5-44
@@ -190,6 +194,8 @@ MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] /home/b
 MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] /home/blue/.gradle/caches/transforms-3/93ab44da923752b971729f9842c44138/transformed/localbroadcastmanager-1.0.0/AndroidManifest.xml:20:5-44
 MERGED from [androidx.print:print:1.0.0] /home/blue/.gradle/caches/transforms-3/8cd13e824ef38bb1e906e9629e87d938/transformed/print-1.0.0/AndroidManifest.xml:20:5-44
 MERGED from [androidx.print:print:1.0.0] /home/blue/.gradle/caches/transforms-3/8cd13e824ef38bb1e906e9629e87d938/transformed/print-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.annotation:annotation-experimental:1.3.0] /home/blue/.gradle/caches/transforms-3/336f423e7e370d25ed03d812bb9a0393/transformed/jetified-annotation-experimental-1.3.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.annotation:annotation-experimental:1.3.0] /home/blue/.gradle/caches/transforms-3/336f423e7e370d25ed03d812bb9a0393/transformed/jetified-annotation-experimental-1.3.0/AndroidManifest.xml:20:5-44
 	android:targetSdkVersion
 		INJECTED from /home/dev/vscode-projects/blue/projects/auth-app/android/app/src/main/AndroidManifest.xml
 	android:minSdkVersion

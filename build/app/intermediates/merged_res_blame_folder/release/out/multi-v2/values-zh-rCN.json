@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.authvault.authapp-mergeReleaseResources-31:/values-zh-rCN/values-zh-rCN.xml",
+            "outputFile": "com.authvault.authapp-mergeReleaseResources-32:/values-zh-rCN/values-zh-rCN.xml",
             "map": [
                 {
                     "source": "/home/blue/.gradle/caches/transforms-3/8039814683e99273639282182313ac7d/transformed/appcompat-1.6.1/res/values-zh-rCN/values-zh-rCN.xml",

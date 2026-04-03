@@ -1,0 +1,5 @@
+if(EXISTS "/home/blue/projects/auth-app/desktop/tests/build/authvault_tests[1]_tests.cmake")
+  include("/home/blue/projects/auth-app/desktop/tests/build/authvault_tests[1]_tests.cmake")
+else()
+  add_test(authvault_tests_NOT_BUILT authvault_tests_NOT_BUILT)
+endif()
