@@ -1,7 +1,15 @@
 [
     {
+        "merged": "com.authvault.authapp-mergeReleaseResources-33:/layout/activity_add_edit_account.xml",
+        "source": "com.authvault.authapp-main-28:/layout/activity_add_edit_account.xml"
+    },
+    {
         "merged": "com.authvault.authapp-mergeReleaseResources-33:/layout/item_account.xml",
         "source": "com.authvault.authapp-main-28:/layout/item_account.xml"
+    },
+    {
+        "merged": "com.authvault.authapp-mergeReleaseResources-33:/layout/activity_qr_scanner.xml",
+        "source": "com.authvault.authapp-main-28:/layout/activity_qr_scanner.xml"
     },
     {
         "merged": "com.authvault.authapp-mergeReleaseResources-33:/layout/activity_main.xml",

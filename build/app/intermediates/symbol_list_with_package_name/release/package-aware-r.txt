@@ -3175,6 +3175,11 @@ id bounce
 id bounceBoth
 id bounceEnd
 id bounceStart
+id btnCancel
+id btnImportImage
+id btnManualEntry
+id btnSave
+id btnScanQR
 id buttonPanel
 id cache_measures
 id callMeasure
@@ -3256,9 +3261,17 @@ id end
 id endToStart
 id enterAlways
 id enterAlwaysCollapsed
+id etDigits
+id etGroup
+id etIssuer
+id etLabel
+id etOffset
+id etPeriod
+id etSecret
 id exitUntilCollapsed
 id expand_activities_button
 id expanded_menu
+id fabAddAccount
 id fade
 id fill
 id fill_horizontal
@@ -3438,6 +3451,7 @@ id progress_horizontal
 id radio
 id ratio
 id rectangles
+id recyclerView
 id report_drawn
 id reverseSawtooth
 id right
@@ -3486,6 +3500,8 @@ id snapMargins
 id south
 id spacer
 id special_effects_controller_view_tag
+id spinnerAlgorithm
+id spinnerType
 id spline
 id split_action_bar
 id spread
@@ -3507,6 +3523,7 @@ id stretch
 id submenuarrow
 id submit_area
 id supportScrollUp
+id switchFavorite
 id tabMode
 id tag_accessibility_actions
 id tag_accessibility_clickable_spans
@@ -3542,6 +3559,7 @@ id title
 id titleDividerNoCustom
 id title_template
 id toggle
+id toolbar
 id top
 id topPanel
 id touch_outside
@@ -3556,6 +3574,7 @@ id triangle
 id tvCode
 id tvIssuer
 id tvLabel
+id tvOffset
 id tvTimer
 id unchecked
 id uniform
@@ -3694,7 +3713,9 @@ layout abc_search_dropdown_item_icons_2line
 layout abc_search_view
 layout abc_select_dialog_material
 layout abc_tooltip
+layout activity_add_edit_account
 layout activity_main
+layout activity_qr_scanner
 layout custom_dialog
 layout design_bottom_navigation_item
 layout design_bottom_sheet_dialog

@@ -26,11 +26,6 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: 'temurin'
       
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      
       - name: Install ktlint
         run: |
           curl -sSLO https://github.com/pinterest/ktlint/releases/download/1.2.1/ktlint
@@ -81,11 +76,16 @@ jobs:
       - name: Build APK
         run: ./build_android.sh
       
+      - name: Copy APKs to dist
+        run: |
+          mkdir -p dist/android
+          cp build/app/outputs/apk/release/*.apk dist/android/
+      
       - name: Upload APK artifacts
         uses: actions/upload-artifact@v4
         with:
           name: android-apks
-          path: build/app/outputs/apk/release/*.apk
+          path: dist/android/
           retention-days: 30
 
   build-desktop:
@@ -106,11 +106,16 @@ jobs:
       - name: Build Desktop
         run: ./build_desktop.sh
       
+      - name: Copy binaries to dist
+        run: |
+          mkdir -p dist/desktop/linux
+          cp desktop/build/linux/authvault dist/desktop/linux/
+      
       - name: Upload Desktop artifacts
         uses: actions/upload-artifact@v4
         with:
           name: desktop-binaries
-          path: desktop/build/linux/authvault
+          path: dist/desktop/linux/
           retention-days: 30
 
   test:
@@ -145,19 +150,19 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: android-apks
-          path: releases/android/
+          path: dist/android/
       
       - name: Download Desktop artifacts
         uses: actions/download-artifact@v4
         with:
           name: desktop-binaries
-          path: releases/desktop/
+          path: dist/desktop/linux/
       
       - name: Upload Release Assets
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            releases/android/*.apk
-            releases/desktop/*
+            dist/android/*.apk
+            dist/desktop/linux/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

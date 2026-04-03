@@ -33,16 +33,21 @@ public final class ItemAccountBinding implements ViewBinding {
   public final TextView tvLabel;
 
   @NonNull
+  public final TextView tvOffset;
+
+  @NonNull
   public final TextView tvTimer;
 
   private ItemAccountBinding(@NonNull LinearLayout rootView,
       @NonNull CircularProgressIndicator progressCircular, @NonNull TextView tvCode,
-      @NonNull TextView tvIssuer, @NonNull TextView tvLabel, @NonNull TextView tvTimer) {
+      @NonNull TextView tvIssuer, @NonNull TextView tvLabel, @NonNull TextView tvOffset,
+      @NonNull TextView tvTimer) {
     this.rootView = rootView;
     this.progressCircular = progressCircular;
     this.tvCode = tvCode;
     this.tvIssuer = tvIssuer;
     this.tvLabel = tvLabel;
+    this.tvOffset = tvOffset;
     this.tvTimer = tvTimer;
   }
 
@@ -97,6 +102,12 @@ public final class ItemAccountBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.tvOffset;
+      TextView tvOffset = ViewBindings.findChildViewById(rootView, id);
+      if (tvOffset == null) {
+        break missingId;
+      }
+
       id = R.id.tvTimer;
       TextView tvTimer = ViewBindings.findChildViewById(rootView, id);
       if (tvTimer == null) {
@@ -104,7 +115,7 @@ public final class ItemAccountBinding implements ViewBinding {
       }
 
       return new ItemAccountBinding((LinearLayout) rootView, progressCircular, tvCode, tvIssuer,
-          tvLabel, tvTimer);
+          tvLabel, tvOffset, tvTimer);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

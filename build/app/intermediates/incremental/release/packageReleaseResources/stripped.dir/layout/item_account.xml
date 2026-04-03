@@ -40,6 +40,15 @@
             android:fontFamily="monospace"
             android:layout_marginTop="8dp"
             android:textColor="?android:attr/textColorPrimary" />
+            
+        <TextView
+            android:id="@+id/tvOffset"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textColor="@android:color/holo_orange_dark"
+            android:layout_marginTop="4dp"
+            android:visibility="gone" />
 
     </LinearLayout>
 

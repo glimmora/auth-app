@@ -47,6 +47,14 @@ class AccountAdapter(
         fun bind(account: Account) {
             binding.tvIssuer.text = account.issuer
             binding.tvLabel.text = account.label
+            
+            // Show offset indicator
+            if (account.offset != 0) {
+                binding.tvOffset.text = "Offset: ${account.offset}s"
+                binding.tvOffset.visibility = android.view.View.VISIBLE
+            } else {
+                binding.tvOffset.visibility = android.view.View.GONE
+            }
 
             updateCode(account)
 

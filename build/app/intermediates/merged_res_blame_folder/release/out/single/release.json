@@ -1,5 +1,13 @@
 [
     {
+        "merged": "com.authvault.authapp-merged_res-34:/layout_activity_qr_scanner.xml.flat",
+        "source": "com.authvault.authapp-main-28:/layout/activity_qr_scanner.xml"
+    },
+    {
+        "merged": "com.authvault.authapp-merged_res-34:/layout_activity_add_edit_account.xml.flat",
+        "source": "com.authvault.authapp-main-28:/layout/activity_add_edit_account.xml"
+    },
+    {
         "merged": "com.authvault.authapp-merged_res-34:/mipmap_ic_launcher.xml.flat",
         "source": "com.authvault.authapp-main-28:/mipmap/ic_launcher.xml"
     },
