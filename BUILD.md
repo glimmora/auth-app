@@ -5,48 +5,51 @@
 ```bash
 cd auth-app
 
-# Build Android (split APKs by ABI, signed with release key)
-flutter build apk --release --split-per-abi --android-skip-build-dependency-validation
+# Build Android (split APKs by ABI)
+./build_android.sh
 
-# Build Web (PWA)
-cd flutter && flutter build web --no-wasm-dry-run
-```
-
-Or use the automation scripts:
-
-```bash
-./scripts/fix.sh all          # Install all dependencies (cached)
-./scripts/build.sh android    # Android build (split + signed)
-./scripts/build.sh web        # Web build
-./scripts/build.sh all        # All platforms
+# Build Desktop (Linux/Windows)
+./build_desktop.sh
 ```
 
 ## Prerequisites
 
 | Requirement | Version | Notes |
 |-------------|---------|-------|
-| Flutter | 3.43+ (master channel) | See `flutter --version` |
-| Dart | 3.10+ | Bundled with Flutter |
-| Java | 17+ | `java -version` |
-| Android SDK | API 35, Build Tools 35.0.0, NDK 27.x | Auto-installed by `fix.sh sdk` |
-| Node.js | 18+ | For web dev server (optional) |
+| Android SDK | API 26-34 | Android Studio or command-line tools |
+| Java JDK | 17+ | Required for Android build |
+| Gradle | 8.x | Build automation for Android |
+| CMake | 3.14+ | Required for Desktop build |
+| C++17 Compiler | GCC/Clang/MSVC | Required for Desktop build |
+| OpenSSL | 1.1+ | Cryptographic library for Desktop |
 
 ## Android Signing
 
-Release APKs are signed using a keystore configured via `flutter/android/key.properties`:
+Release APKs can be signed by configuring `android/app/build.gradle`:
 
-```properties
-storePassword=<your-password>
-keyPassword=<your-password>
-keyAlias=authvault
-storeFile=../keystore/release.jks
+```gradle
+android {
+    signingConfigs {
+        release {
+            storeFile file("../keystore/release.jks")
+            storePassword "your-password"
+            keyAlias "authvault"
+            keyPassword "your-password"
+        }
+    }
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+        }
+    }
+}
 ```
 
 Create the keystore:
 
 ```bash
 keytool -genkey -v \
-  -keystore flutter/android/keystore/release.jks \
+  -keystore android/keystore/release.jks \
   -keyalg RSA -keysize 2048 -validity 10000 \
   -alias authvault
 ```
@@ -56,55 +59,44 @@ keytool -genkey -v \
 ### Android — ABI-split APKs
 
 ```
-flutter/build/app/outputs/flutter-apk/
-├── app-armeabi-v7a-release.apk   # 32-bit ARM  (~22 MB)
-├── app-arm64-v8a-release.apk     # 64-bit ARM  (~26 MB)
-└── app-x86_64-release.apk        # 64-bit x86  (~28 MB)
+android/app/build/outputs/apk/release/
+├── app-armeabi-v7a-release.apk   # 32-bit ARM
+├── app-arm64-v8a-release.apk     # 64-bit ARM
+├── app-x86_64-release.apk        # 64-bit x86
+└── app-release.apk               # Universal APK
 ```
 
-### Web (Flutter)
+### Desktop
 
 ```
-flutter/build/web/
-├── index.html
-├── main.dart.js
-├── flutter.js
-├── flutter_service_worker.js
-├── assets/
-└── canvaskit/
-```
-
-### Web (React/Vite)
-
-```
-web/dist/
-├── index.html
-└── assets/
+desktop/build/linux/authvault     # Linux executable
+desktop/build/windows/authvault.exe  # Windows executable
 ```
 
 ## Verify APK Signature
 
 ```bash
-$ANDROID_HOME/build-tools/35.0.0/apksigner verify \
-  --verbose flutter/build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+apksigner verify --verbose android/app/build/outputs/apk/release/app-arm64-v8a-release.apk
 ```
 
 ## Troubleshooting
 
 | Problem | Solution |
 |---------|----------|
-| "Android SDK not found" | `export ANDROID_HOME=$HOME/sdk/android` |
-| "Keystore file not found" | Check `key.properties` path is relative to `app/` |
-| Kotlin version mismatch | Ensure `settings.gradle` and `build.gradle` use same Kotlin version |
-| Gradle cache corruption | `rm -rf ~/.gradle/caches/` then rebuild |
-| "flex_color_scheme" compile error | Upgrade to `^8.3.0` in `pubspec.yaml` |
-| Web platform not configured | `cd flutter && flutter create . --platforms web` |
+| "Android SDK not found" | Set `ANDROID_HOME` environment variable |
+| "Keystore file not found" | Check path in `build.gradle` |
+| "Gradle not found" | Install Gradle or use wrapper |
+| "CMake not found" | Install CMake 3.14+ |
+| "OpenSSL not found" | Install OpenSSL development libraries |
 
-## Kotlin / Gradle Versions
+## Architecture
 
-| Component | Version | Configured in |
-|-----------|---------|---------------|
-| Kotlin | 2.1.0 | `android/settings.gradle`, `android/build.gradle` |
-| Gradle | 8.11.1 | `android/gradle/wrapper/gradle-wrapper.properties` |
-| AGP | 8.9.1 | `android/settings.gradle` |
-| NDK | 27.0.12077973 | Auto-downloaded by Gradle |
+### Android (Kotlin)
+- TOTP/HOTP engine in `android/app/src/main/java/com/authvault/authapp/crypto/`
+- Base32 decoder for secret keys
+- Clean architecture with separated modules
+
+### Desktop (C++)
+- TOTP/HOTP engine in `desktop/src/totp_engine.cpp`
+- OpenSSL for HMAC-SHA1 operations
+- CMake build system for cross-platform support
